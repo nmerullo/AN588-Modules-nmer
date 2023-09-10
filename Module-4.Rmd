@@ -5,7 +5,7 @@ date: "2023-09-10"
 output: html_document
 ---
 
-```{r matrices and arrays, echo=TRUE}
+```{r matrices, echo=TRUE}
 m <- matrix(data = c(1, 2, 3, 4), nrow = 2, ncol = 2)
 m
 ```
@@ -41,3 +41,19 @@ m2 <- cbind(v1, v2)
 m2
 ```
 
+## Binding
+With existing vectors- you can combine into matrices using rbind (by row, like having byrow = TRUE) or cbind (by column, like having byrow = FALSE)
+
+```{r metadata, echo=TRUE}
+class(m1)
+dim(m1)
+class(m2)
+dim(m2)
+colnames(m2)
+rownames(m2)
+```
+
+## Metadata
+Using these commands I can find out more information about the matrices. 
+Note that dim() returns the dimensions of a matrix as vector and the order is row by column number.
+Column names are present because I bound two vectors with defined names and cbind() was used. 
