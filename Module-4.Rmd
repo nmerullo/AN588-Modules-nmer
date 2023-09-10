@@ -90,5 +90,61 @@ v <- 101:200
 v[seq(from = 1, to = 100, by = 2)]
 ```
 
-#Subsetting with a Function or Calculation
+## Subsetting with a Function or Calculation
 This subset selected integers counting by 2s, set by the dimensions in the from and to arguments
+
+```{r Challenge1, echo=TRUE}
+u <- c("stately", "plump", "buck", "mulligan", "came", "from", "the", "stairhead", "bearing", "a", "bowl", "of", "lather", "on", "which", "a", "mirror", "and", "a", "razor", "lay", "crossed")
+u
+u[seq(from = 1, to = 22, by = 3)]
+```
+
+## Challenge 1
+Trying again with the str_split() command
+leaving the pattern argument blank (just closed quotation marks) would break it up by character, adding the space broke it up by word. 
+```{r Challenge1 take 2, echo=TRUE}
+u <- c("Stately plump Buck Mulligan came from the stairhead bearing a bowl of lather on which a mirror and a razor lay crossed")
+u
+u <- str_split_1(u, " ")
+u[seq(from = 1, to = 22, by = 3)]
+```
+
+## Challenge 2
+
+```{r Challenge2, echo=TRUE}
+m <- matrix(data = 1:80, nrow = 8, ncol = 10, byrow = FALSE)
+m
+```
+
+### extracting 2nd, 3rd, and 6th columns 
+
+```{r Challenge2 part 1, echo=TRUE}
+x <- c(m[, 2], m[, 3], m[, 6])
+x
+```
+
+### extracting 6th to 8th rows
+
+```{r Challenge2 part 2, echo=TRUE}
+x <- c(m[6, ], m[7, ], m[8, ])
+x
+```
+
+### extracting the elements from row 2, column 2 to row 6, column 9
+
+```{r Challenge2 part 3, echo=TRUE}
+x <- c(m[2, ], m[, 2:6], m[, 9])
+x
+```
+
+## Challenge 3
+Create a 4-dimensional 400 element array (5x5x4x4) named a consisting of numbers 400 to 1 (descending)
+Subsetting this array requires 4 coordinates. Each one corresponds to a location/dimension. It's easiest to work backwards so the farthest right dimension working left to figure out how it gets a result. When a dimension is missing, it results any of the 4 options. 
+
+```{r Challenge3, echo=TRUE}
+a <- array(data = 400:1, dim = c(5, 5, 4, 4))
+a
+a[1, 1, 1, 2]
+a[2, 3, 2, ]
+a[1:5, 1:5, 3, 3]
+```
