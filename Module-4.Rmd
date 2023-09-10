@@ -206,3 +206,107 @@ names(Primates) <- list("Haplorhini", "Stepsirhini")
 Primates
 ```
 
+## Data Frames
+Rows are cases/observations and Columns are variables
+
+```{r Data Frame Example, echo=TRUE}
+df <- data.frame(firstName = c("Nitin", "Silvy", "Ingrid", "Claire"), major = c("Biology (CM)",
+    "Anthropology (Bio)", "Anthropology (Medical)", "Biology (EEB)"), sex = c("M",
+    "F", "F", "F"), yearInProgram = c(1, 2, 2, 3))
+df
+```
+
+## Reading a CSV
+Select file name and location on computer. Line separator is comma. There are headers (true). We are only printing select columns so the row is left blank and then a vector is entered for the non continuous columns.
+Structure tells us the different columns and the first few observations of each one. Also the class.
+
+```{r Reading a CSV, echo-TRUE}
+df <- read.csv("~/Desktop/random-people.csv", sep = ",", header = TRUE, stringsAsFactors = FALSE)
+df[, c(1, 3, 4, 11, 12)]
+```
+
+## Data Frame Commands
+Structure tells us the different columns and the first few observations of each one. Also the class.
+```{r Daa Frame Commands, echo-TRUE}
+str(df)
+df[, 3] #all first names (data from column 3)
+str(df[,3]) #returns a vector of the data from column 3
+df$name.last #another way of finding the observations of a column name/variable (if you know the name)
+str(df$name.last) #returns a vector of the last names
+df[3] #extracts data from column 3 as data frame
+str(df[3]) #proving df[3] is a data frame structure
+df["name.last"]
+str(df["name.last"]) #same thing as before - proves that it comes out as a data frame
+```
+
+##Modifying Data Frames
+use rbind and cbind to add rows and columns to data frames
+
+```{r Modfiying Data Frames, echo-TRUE}
+df <- cbind(df, id = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+    17, 18, 19, 20))
+df <- cbind(df, school = c("BU", "BU", "Harvard", "Harvard", "BU", "Boston College",
+    "MIT", "BU", "BU", "UMASS Boston", "Harvard", "BU", "Boston College", "BU",
+    "Harvard", "MIT", "Harvard", "BU", "UMASS Boston", "Harvard"))
+df
+```
+
+Or you can extend the data frame using $ but this will etend it as a character vector as opposed to a factor
+
+```{r Extending a data frame, echo-TRUE}
+df$school <- c("BU", "BU", "Harvard", "Harvard", "BU", "Boston College", "MIT",
+    "BU", "BU", "UMASS Boston", "Harvard", "BU", "Boston College", "BU", "Harvard",
+    "MIT", "Harvard", "BU", "UMASS Boston", "Harvard")
+```
+
+Factors are an atomic data class. They are unique because R assigns eahch unique character strings to an integer so something like "male" becomes 2 and "female" becomes 1. 
+
+## Filtering
+Using logical vectors to subset data frames
+
+```{r Filtering1, echo-TRUE}
+new_df <- df[df$school =="BU", ]
+new_df
+```
+
+And if we only want to see a few columns when we do this, that's possible too.
+
+```{r Filtering2, echo-TRUE}
+new_df <- df[df$school =="BU", c("name.last", "name.first", "school")]
+new_df
+```
+
+## Challenge 5
+Store the following numbers as a 5 x 3 matrix, called “m3”: 3, 0, 1 ,23, 1, 2, 33, 1, 1, 42, 0, 1, 41, 0, 2. Be sure to fill the matrix ROW-WISE.
+
+```{r Challenge 5, echo-TRUE}
+m3 <- matrix(data = c(3, 0, 1 ,23, 1, 2, 33, 1, 1, 42, 0, 1, 41, 0, 2), nrow = 5, ncol = 3, byrow = TRUE)
+m3
+```
+
+Coerce from Matrix to Data Frame
+
+```{r Challenge 5-2, echo-TRUE}
+m3 <- as.data.frame(m3)
+m3
+```
+
+Coerce the second column to be logic-valued
+
+```{r Challenge 5-3, echo-TRUE}
+m3 [, 2] <- as.logical(m3[, 2])
+m3
+```
+
+Coerce the third column to be factor valued
+
+```{r Challenge 5-4, echo-TRUE}
+m3 [, 3] <- as.factor(m3[, 3])
+m3
+```
+
+Use structure to see the data type for each variable (column)
+
+```{r Challenge 5-5, echo-TRUE}
+str(m3)
+```
