@@ -1,0 +1,43 @@
+---
+title: "Module-4"
+author: "Nicole Merullo"
+date: "2023-09-10"
+output: html_document
+---
+
+```{r matrices and arrays, echo=TRUE}
+m <- matrix(data = c(1, 2, 3, 4), nrow = 2, ncol = 2)
+m
+```
+
+## Creating a Matrix
+It's like having a vector within a vector. Can only have one class of data stored in it.
+nrow is how many rows
+ncol is how many columns
+They fill up by the column first until the first column is filled then it moves over to the next.
+
+```{r By Row False, echo=TRUE}
+m <- matrix (data = c(1, 2, 3, 4, 5 ,6), nrow = 2, ncol = 3, byrow = FALSE)
+m
+```
+
+## By Row False
+The byrow argument is automatically set to false, so this matrix fills in its columns just like the last one did
+
+```{r By Row True, echo=TRUE}
+m <- matrix (data = c(1, 2, 3, 4, 5 ,6), nrow = 2, ncol = 3, byrow = TRUE)
+m
+```
+
+## By Row True
+If I change the argument to true, then it fills in the data by row instead of by column
+
+```{r binding, echo=TRUE}
+v1 <- c(1, 2, 3, 4)
+v2 <- c(6, 7, 8, 9)
+m1 <- rbind(v1, v2)
+m1
+m2 <- cbind(v1, v2)
+m2
+```
+
