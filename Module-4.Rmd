@@ -56,4 +56,39 @@ rownames(m2)
 ## Metadata
 Using these commands I can find out more information about the matrices. 
 Note that dim() returns the dimensions of a matrix as vector and the order is row by column number.
-Column names are present because I bound two vectors with defined names and cbind() was used. 
+Column names are present because I bound two vectors with defined names and cbind() was used.
+
+```{r structure, echo=TRUE}
+str(m2)
+```
+
+## Structure
+The str() command provides a lot of details about the object.
+
+```{r arrays, echo=TRUE}
+a <- array(data = 1:90, dim = c(5, 6, 3))
+a
+```
+
+## Arrays
+This created an array with data all integers 1 through 90 arranged in 3 levels, 5 rows by 6 columns
+This is a 3 dimensional array (there is a third dimension beyond rows and columns)
+Arrays can only have one class of data
+
+```{r Subsetting, echo=TRUE}
+v <- 1:100
+v
+v[1:15] #selects first 15 elements
+v[c(2, 4, 6, 8 ,10)] #creates vector of selected elements
+```
+
+## Subsetting
+These are some basic ways of getting a few elements from a large vector
+
+```{r Subsetting2, echo=TRUE}
+v <- 101:200
+v[seq(from = 1, to = 100, by = 2)]
+```
+
+#Subsetting with a Function or Calculation
+This subset selected integers counting by 2s, set by the dimensions in the from and to arguments
