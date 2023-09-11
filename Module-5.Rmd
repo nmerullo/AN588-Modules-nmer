@@ -4,27 +4,127 @@ author: "Nicole Merullo"
 date: "2023-09-11"
 output: html_document
 ---
+# Loading Different Types of Plain Text Files
+read.table() is the most basic way of bringing in a data file
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+## Reading from a Local File
+
+```{r read file, echo=TRUE}
+f <- file.choose() #CPDS-1960-2014-reduced.txt
+d <- read.table(f, header = TRUE, sep = "\t", stringsAsFactors = FALSE, fill = T)
+head(d) #lists the first 6 lines of data. Adding [1:10] would expand it to 10 etc.
+```
+Can also show the last 6 lines with the tail() command
+```{r visualizing date, echo=TRUE}
+tail(d)
+```
+```{r visualizing data, echo=TRUE}
+class(d)
 ```
 
-## R Markdown
+Alternatively we can visualize the file like this...
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r read.delim, echo=TRUE}
+d <- read.delim(f, header = TRUE, stringsAsFactors = FALSE)
+head(d)
+```
+## Loading Comma-separated (.csv) text with {base} R functions
+```{r csv files, echo=TRUE}
+f <- file.choose()
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r csv files 2, echo=TRUE}
+d <- read.table(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Or Alternatively
+
+```{r csv files 3, echo=TRUE}
+d <- read.csv(f, header = TRUE, stringsAsFactors = FALSE)
+head(d)
+```
+
+#Using readr Package
+
+```{r loading in readr, echo=TRUE}
+require(readr)
+```
+
+```{r tsv file, echo=TRUE}
+f <- file.choose() #CPDS-1960-2014-reduced.txt
+d <- read_tsv(f, col_names = TRUE) #tsv is tab separated files
+```
+```{r tsv file 2, echo=TRUE}
+head(d)
+```
+
+```{r tsv file 3, echo=TRUE}
+class(d)
+```
+
+The class of this data set is both a data frame and other table based data structures
+
+Alternatively we can load it in like this:
+
+```{r tsv file 4, echo=TRUE}
+d <- read_delim(f, delim = "\t", col_names = TRUE)
+head(d)
+```
+
+Then readr with CSV
+
+```{r csv file with readr, echo=TRUE}
+require(readr)
+f <- file.choose()
+d <- read_csv(f, col_names = TRUE) 
+```
+```{r csv file with readr 2, echo=TRUE}
+head(d) 
+```
+
+And alternatively:
+
+```{r csv file with readr 3, echo=TRUE}
+d <- read_delim(f, delim = ",", col_names = TRUE)
+head(d)
+```
+
+## Loading Excel Files
+
+First will try with readxl package
+```{r readxl, echo=TRUE}
+require(readxl)
+f <- file.choose() #"~/Desktop/CPDS-1960-2014-reduced.xlsx"
+d <- read_excel(f, sheet = 1, col_names = TRUE)
+head(d)
+str(d) #always use str() to check if your variables come in as the correct data class.
+```
+
+Now will try with XLConnect
+
+```{r XLConnect, echo=TRUE}
+require(XLConnect)
+f <- file.choose() #"~/Desktop/CPDS-1960-2014-reduced.xlsx"
+d <- readWorksheetFromFile(f, sheet = 1, header = TRUE)
+head(d)
+str(d)
+```
+ **This one cannot be completed because of missing java runtime.**
+ If I am able to get this one to work - here is the rest of this part of XLConnect, which writes data frames back out to Excel worksheets:
+ f <- "~/Desktop/output.xlsx"
+if (file.exists(f)) {
+    file.remove(f)
+}
+writeWorksheetToFile(f, d, sheet = "myData", clearSheets = TRUE)
+
+## Loading Files Stored on a Remote Server
+e.g., Github
+Will use readr or curl for this
+
+```{r curl, echo=TRUE}
+library(curl)
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/CPDS-1960-2014-reduced.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
