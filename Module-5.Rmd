@@ -128,3 +128,104 @@ f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/m
 d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(d)
 ```
+
+And for a tsv file, do this:
+
+```{r curl for tsv, echo=TRUE}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/CPDS-1960-2014-reduced.txt")
+d <- read.table(f, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+head(d)
+```
+
+And for readr csv do this:
+
+```{r readr for csv, echo=TRUE}
+Sys.setenv(VROOM_CONNECTION_SIZE = 131072 * 2)
+library(readr)
+f <- "https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/CPDS-1960-2014-reduced.csv"
+d <- read_csv(f, col_names = TRUE)
+head(d)
+```
+
+for readr tsv:
+
+```{r readr for tsv, echo=TRUE}
+f <- "https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/CPDS-1960-2014-reduced.txt"
+d <- read_tsv(f, col_names = TRUE)
+head(d)
+```
+
+## Importing Data from a file hosted on Dropbox
+
+```{r Dropbox commands, echo=FALSE}
+require(rdrop2)
+drop_auth()  # opens a browser dialog box to ask for authorization...
+drop_dir()  # lists the contents of your dropbox folder
+f <- "CPDS-1960-2014-reduced.csv"  # name of the file to read from
+f <- drop_search(f)  # searches your dropbox directory for file or directory names; this can be slow
+f <- f$path  # f$path is the location you choose from the results returned above
+d <- drop_read_csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+str(d)
+```
+
+To read a file from someone else's dropbox do the following:
+
+```{r Dropbox commands 2, echo=TRUE}
+link <- "https://www.dropbox.com/scl/fi/560bh55pwv3sowbmyygsl/CPDS-1960-2014-reduced.csv?rlkey=sp4xkouegbno3fqrt65o7gb4d&dl=0"
+link <- gsub(pattern = "dl=0", replacement = "dl=1", x = link)
+d <- read.csv(link, header = TRUE, sep = ",", stringsAsFactors = FALSE) #you need to do this sub because the last characters of the link only bring you to the webpage, not to the raw data itself.
+head(d)
+str(d)
+```
+
+Another way to get data from a dropbox link:
+
+```{r Dropbox with repmis, echo=TRUE}
+require(repmis)
+d <- source_data("https://www.dropbox.com/scl/fi/560bh55pwv3sowbmyygsl/CPDS-1960-2014-reduced.csv?rlkey=sp4xkouegbno3fqrt65o7gb4d&dl=1", header = TRUE, sep = ",")
+head(d)
+str(d)
+```
+
+##Loading in Files from Google Drive
+
+This interactive interface will guide you through steps to link your Google Drive. The 'n_max' option will restrict the number of files retrieved to the 30 most recently-added to the linked drive. The 'type' option allows you to only search for a specific kind of file; in this case, spreadsheets (this 'type' will *not* find Excel files, only Google Sheets). It will store the results in an object called a 'dribble'.
+
+In your dribble, find the Google Sheet you want. The first column is the name, and the second is the ID for the sheet. That ID is what you need to enter to read your google sheet into R (you may need to log in again to access it).
+
+```{r googledrive, echo=TRUE}
+require(googledrive)
+require(googlesheets4)
+f <- drive_find(n_max = 30, type = "spreadsheet") #reminder that you stored this as a variable called f!!
+```
+
+```{r googledrive 2, echo=TRUE}
+d <- read_sheet("1Eo6UFxXnXKLhcZ9TXkoHl8GqIve_0ePRKNVb7xgP0L0")
+head(d)
+str(d)
+```
+
+##Downloading files from a remote server to your computer
+
+rdrop2 and googledrive can take files from those remote servers and not just load them in, but also download them to your computer
+
+Here is how to do it with dropbox, from your own dropbox account:
+
+```{r dropbox download, echo=FALSE}
+filename <- "CPDS-1960-2014-reduced.csv"  # name of file to download
+f <- drop_search(filename)
+f <- f$path  # f$path is the location of the results returned above
+drop_get(f, local_file = paste0("~/Desktop/", filename), overwrite = TRUE, progress = TRUE)
+```
+
+This also works for other file types like excel and saves ti to the Desktop.
+
+For doing this from Google Drive:
+
+```{r google drive download, echo=FALSE}
+drive_find(pattern = "CPDS-1960-2014-reduced")  #identifies files that match that name 
+drive_download("CPDS-1960-2014-reduced.csv")
+```
+
+Instead, this method saves to the working directory.
