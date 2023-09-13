@@ -1,0 +1,326 @@
+---
+title: "Module-4"
+author: "Nicole Merullo"
+date: "2023-09-10"
+output: 
+  html_document:
+    theme: yeti
+    highlight: NULL
+---
+## Creating a Matrix
+
+```{r matrices, echo=TRUE}
+m <- matrix(data = c(1, 2, 3, 4), nrow = 2, ncol = 2)
+m
+```
+
+It's like having a vector within a vector. Can only have one class of data stored in it.
+nrow is how many rows
+ncol is how many columns
+They fill up by the column first until the first column is filled then it moves over to the next.
+
+## By Row False
+
+```{r By Row False, echo=TRUE}
+m <- matrix (data = c(1, 2, 3, 4, 5 ,6), nrow = 2, ncol = 3, byrow = FALSE)
+m
+```
+
+The byrow argument is automatically set to false, so this matrix fills in its columns just like the last one did
+
+## By Row True
+
+```{r By Row True, echo=TRUE}
+m <- matrix (data = c(1, 2, 3, 4, 5 ,6), nrow = 2, ncol = 3, byrow = TRUE)
+m
+```
+
+If I change the argument to true, then it fills in the data by row instead of by column
+
+## Binding
+
+```{r binding, echo=TRUE}
+v1 <- c(1, 2, 3, 4)
+v2 <- c(6, 7, 8, 9)
+m1 <- rbind(v1, v2)
+m1
+m2 <- cbind(v1, v2)
+m2
+```
+
+With existing vectors- you can combine into matrices using rbind (by row, like having byrow = TRUE) or cbind (by column, like having byrow = FALSE)
+
+## Metadata
+
+```{r metadata, echo=TRUE}
+class(m1)
+dim(m1)
+class(m2)
+dim(m2)
+colnames(m2)
+rownames(m2)
+```
+
+Using these commands I can find out more information about the matrices. 
+Note that dim() returns the dimensions of a matrix as vector and the order is row by column number.
+Column names are present because I bound two vectors with defined names and cbind() was used.
+
+## Structure
+
+```{r structure, echo=TRUE}
+str(m2)
+```
+
+The str() command provides a lot of details about the object.
+
+## Arrays
+
+```{r arrays, echo=TRUE}
+a <- array(data = 1:90, dim = c(5, 6, 3))
+a
+```
+
+This created an array with data all integers 1 through 90 arranged in 3 levels, 5 rows by 6 columns
+This is a 3 dimensional array (there is a third dimension beyond rows and columns)
+Arrays can only have one class of data
+
+## Subsetting
+
+```{r Subsetting, echo=TRUE}
+v <- 1:100
+v
+v[1:15] #selects first 15 elements
+v[c(2, 4, 6, 8 ,10)] #creates vector of selected elements
+```
+
+These are some basic ways of getting a few elements from a large vector
+
+## Subsetting with a Function or Calculation
+
+```{r Subsetting2, echo=TRUE}
+v <- 101:200
+v[seq(from = 1, to = 100, by = 2)]
+```
+
+This subset selected integers counting by 2s, set by the dimensions in the from and to arguments
+
+## Challenge 1
+
+```{r Challenge1, echo=TRUE}
+u <- c("stately", "plump", "buck", "mulligan", "came", "from", "the", "stairhead", "bearing", "a", "bowl", "of", "lather", "on", "which", "a", "mirror", "and", "a", "razor", "lay", "crossed")
+u
+u[seq(from = 1, to = 22, by = 3)]
+```
+
+Trying again with the str_split() command
+leaving the pattern argument blank (just closed quotation marks) would break it up by character, adding the space broke it up by word. 
+
+```{r Challenge1 take 2, echo=TRUE}
+u <- c("Stately plump Buck Mulligan came from the stairhead bearing a bowl of lather on which a mirror and a razor lay crossed")
+u
+require(stringr)
+u <- str_split_1(u, " ")
+u[seq(from = 1, to = 22, by = 3)]
+```
+
+## Challenge 2
+
+```{r Challenge2, echo=TRUE}
+m <- matrix(data = 1:80, nrow = 8, ncol = 10, byrow = FALSE)
+m
+```
+
+### extracting 2nd, 3rd, and 6th columns 
+
+```{r Challenge2 part 1, echo=TRUE}
+x <- c(m[, 2], m[, 3], m[, 6])
+x
+```
+
+### extracting 6th to 8th rows
+
+```{r Challenge2 part 2, echo=TRUE}
+x <- c(m[6, ], m[7, ], m[8, ])
+x
+```
+
+### extracting the elements from row 2, column 2 to row 6, column 9
+
+```{r Challenge2 part 3, echo=TRUE}
+x <- c(m[2, ], m[, 2:6], m[, 9])
+x
+```
+
+## Challenge 3
+Create a 4-dimensional 400 element array (5x5x4x4) named a consisting of numbers 400 to 1 (descending)
+Subsetting this array requires 4 coordinates. Each one corresponds to a location/dimension. It's easiest to work backwards so the farthest right dimension working left to figure out how it gets a result. When a dimension is missing, it results any of the 4 options. 
+
+```{r Challenge3, echo=TRUE}
+a <- array(data = 400:1, dim = c(5, 5, 4, 4))
+a
+a[1, 1, 1, 2]
+a[2, 3, 2, ]
+a[1:5, 1:5, 3, 3]
+```
+
+## Overwriting
+Use m as defined above
+Note that as soon as some of them are characters they ALL have to become characters because matrices can only have one class of data.
+
+```{r Overwriting, echo=TRUE}
+m
+m[7, 1] <- 564
+m[, 8] <- 2
+m[2:5, 4:8] <- 1
+m[2:5, 4:8] <- c(20, 19, 18, 17)
+m[2:5, 4:8] <- matrix(data = c(20:1), nrow = 4, ncol = 5, byrow = TRUE)
+m[, 8] <- c("a", "b")
+m
+```
+
+## Lists and Data Frames
+Below are different commands and ways to extract details from lists
+
+```{r Lists, echo=TRUE}
+s <- c("this", "is", "a", "vector", "of", "strings")  #vector
+m <- matrix(data = 1:40, nrow = 5, ncol = 8)  #matrix
+b <- FALSE  #logical statement
+l <- list(s, m, b)  # combines into list
+l
+l[[2]] #just looking at a part of a list, in this case the matrix
+l[[2]][2, 6] #extending the notation to normal subsetting notation
+l[1:2] #list slicing
+l[c(1, 3)] #list slicing again but this time just 1 and 3
+str(l)
+names(l) <- c("string", "matrix", "logical")
+names(l)
+l$string
+l$matrix[3, 5]
+```
+
+## Challenge 5
+Create lists within lists to reconstruct a primate phylogeny
+
+```{r Challenge 5, echo=TRUE}
+Lemuroidea <- c("Cheirogaleidae", "Lepilemuridae", "Indriidae", "Lemuridae",
+    "Daubentoniidae")
+Lorisoidea <- c("Lorisidae", "Galagidae")
+Strepsirhini <- list(Lemuroidea, Lorisoidea)
+names(Strepsirhini) <- list("Lemuroidea", "Lorisoidea")
+Strepsirhini
+Tarsioidea <- c("Tarsiidae")
+Catarrhini <- c("Cercopithecidae", "Hylobatidae", "Hominidae")
+Platyrrhini <- c("Cebidae", "Atelidae", "Pitheciidae")
+Anthropoidea <- list(Platyrrhini, Catarrhini)
+names(Anthropoidea) <- list("Platyrrhini", "Catarrhini")
+Haplorhini <- list(Anthropoidea, Tarsioidea)
+names(Haplorhini) <- list("Anthropoidea", "Tarsioidea")
+Primates <- list(Haplorhini, Strepsirhini)
+names(Primates) <- list("Haplorhini", "Stepsirhini")
+Primates
+```
+
+## Data Frames
+Rows are cases/observations and Columns are variables
+
+```{r Data Frame Example, echo=TRUE}
+df <- data.frame(firstName = c("Nitin", "Silvy", "Ingrid", "Claire"), major = c("Biology (CM)",
+    "Anthropology (Bio)", "Anthropology (Medical)", "Biology (EEB)"), sex = c("M",
+    "F", "F", "F"), yearInProgram = c(1, 2, 2, 3))
+df
+```
+
+## Reading a CSV
+Select file name and location on computer. Line separator is comma. There are headers (true). We are only printing select columns so the row is left blank and then a vector is entered for the non continuous columns.
+Structure tells us the different columns and the first few observations of each one. Also the class.
+
+```{r Reading a CSV, echo-TRUE}
+df <- read.csv("~/Desktop/random-people.csv", sep = ",", header = TRUE, stringsAsFactors = FALSE)
+df[, c(1, 3, 4, 11, 12)]
+```
+
+## Data Frame Commands
+Structure tells us the different columns and the first few observations of each one. Also the class.
+```{r Daa Frame Commands, echo-TRUE}
+str(df)
+df[, 3] #all first names (data from column 3)
+str(df[,3]) #returns a vector of the data from column 3
+df$name.last #another way of finding the observations of a column name/variable (if you know the name)
+str(df$name.last) #returns a vector of the last names
+df[3] #extracts data from column 3 as data frame
+str(df[3]) #proving df[3] is a data frame structure
+df["name.last"]
+str(df["name.last"]) #same thing as before - proves that it comes out as a data frame
+```
+
+##Modifying Data Frames
+use rbind and cbind to add rows and columns to data frames
+
+```{r Modfiying Data Frames, echo-TRUE}
+df <- cbind(df, id = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+    17, 18, 19, 20))
+df <- cbind(df, school = c("BU", "BU", "Harvard", "Harvard", "BU", "Boston College",
+    "MIT", "BU", "BU", "UMASS Boston", "Harvard", "BU", "Boston College", "BU",
+    "Harvard", "MIT", "Harvard", "BU", "UMASS Boston", "Harvard"))
+df
+```
+
+Or you can extend the data frame using $ but this will etend it as a character vector as opposed to a factor
+
+```{r Extending a data frame, echo-TRUE}
+df$school <- c("BU", "BU", "Harvard", "Harvard", "BU", "Boston College", "MIT",
+    "BU", "BU", "UMASS Boston", "Harvard", "BU", "Boston College", "BU", "Harvard",
+    "MIT", "Harvard", "BU", "UMASS Boston", "Harvard")
+```
+
+Factors are an atomic data class. They are unique because R assigns eahch unique character strings to an integer so something like "male" becomes 2 and "female" becomes 1. 
+
+## Filtering
+Using logical vectors to subset data frames
+
+```{r Filtering1, echo-TRUE}
+new_df <- df[df$school =="BU", ]
+new_df
+```
+
+And if we only want to see a few columns when we do this, that's possible too.
+
+```{r Filtering2, echo-TRUE}
+new_df <- df[df$school =="BU", c("name.last", "name.first", "school")]
+new_df
+```
+
+## Challenge 5
+Store the following numbers as a 5 x 3 matrix, called “m3”: 3, 0, 1 ,23, 1, 2, 33, 1, 1, 42, 0, 1, 41, 0, 2. Be sure to fill the matrix ROW-WISE.
+
+```{r Challenge 5, echo-TRUE}
+m3 <- matrix(data = c(3, 0, 1 ,23, 1, 2, 33, 1, 1, 42, 0, 1, 41, 0, 2), nrow = 5, ncol = 3, byrow = TRUE)
+m3
+```
+
+Coerce from Matrix to Data Frame
+
+```{r Challenge 5-2, echo-TRUE}
+m3 <- as.data.frame(m3)
+m3
+```
+
+Coerce the second column to be logic-valued
+
+```{r Challenge 5-3, echo-TRUE}
+m3 [, 2] <- as.logical(m3[, 2])
+m3
+```
+
+Coerce the third column to be factor valued
+
+```{r Challenge 5-4, echo-TRUE}
+m3 [, 3] <- as.factor(m3[, 3])
+m3
+```
+
+Use structure to see the data type for each variable (column)
+
+```{r Challenge 5-5, echo-TRUE}
+str(m3)
+```
