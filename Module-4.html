@@ -357,40 +357,67 @@ display: none;
 </div>
 
 
+<<<<<<< HEAD
 <div id="creating-a-matrix" class="section level2">
 <h2>Creating a Matrix</h2>
+=======
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <pre class="r"><code>m &lt;- matrix(data = c(1, 2, 3, 4), nrow = 2, ncol = 2)
 m</code></pre>
 <pre><code>##      [,1] [,2]
 ## [1,]    1    3
 ## [2,]    2    4</code></pre>
+<<<<<<< HEAD
+=======
+<div id="creating-a-matrix" class="section level2">
+<h2>Creating a Matrix</h2>
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <p>It’s like having a vector within a vector. Can only have one class of
 data stored in it. nrow is how many rows ncol is how many columns They
 fill up by the column first until the first column is filled then it
 moves over to the next.</p>
+<<<<<<< HEAD
 </div>
 <div id="by-row-false" class="section level2">
 <h2>By Row False</h2>
+=======
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <pre class="r"><code>m &lt;- matrix (data = c(1, 2, 3, 4, 5 ,6), nrow = 2, ncol = 3, byrow = FALSE)
 m</code></pre>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]    1    3    5
 ## [2,]    2    4    6</code></pre>
+<<<<<<< HEAD
 <p>The byrow argument is automatically set to false, so this matrix
 fills in its columns just like the last one did</p>
 </div>
 <div id="by-row-true" class="section level2">
 <h2>By Row True</h2>
+=======
+</div>
+<div id="by-row-false" class="section level2">
+<h2>By Row False</h2>
+<p>The byrow argument is automatically set to false, so this matrix
+fills in its columns just like the last one did</p>
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <pre class="r"><code>m &lt;- matrix (data = c(1, 2, 3, 4, 5 ,6), nrow = 2, ncol = 3, byrow = TRUE)
 m</code></pre>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]    1    2    3
 ## [2,]    4    5    6</code></pre>
+<<<<<<< HEAD
 <p>If I change the argument to true, then it fills in the data by row
 instead of by column</p>
 </div>
 <div id="binding" class="section level2">
 <h2>Binding</h2>
+=======
+</div>
+<div id="by-row-true" class="section level2">
+<h2>By Row True</h2>
+<p>If I change the argument to true, then it fills in the data by row
+instead of by column</p>
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <pre class="r"><code>v1 &lt;- c(1, 2, 3, 4)
 v2 &lt;- c(6, 7, 8, 9)
 m1 &lt;- rbind(v1, v2)
@@ -405,12 +432,21 @@ m2</code></pre>
 ## [2,]  2  7
 ## [3,]  3  8
 ## [4,]  4  9</code></pre>
+<<<<<<< HEAD
 <p>With existing vectors- you can combine into matrices using rbind (by
 row, like having byrow = TRUE) or cbind (by column, like having byrow =
 FALSE)</p>
 </div>
 <div id="metadata" class="section level2">
 <h2>Metadata</h2>
+=======
+</div>
+<div id="binding" class="section level2">
+<h2>Binding</h2>
+<p>With existing vectors- you can combine into matrices using rbind (by
+row, like having byrow = TRUE) or cbind (by column, like having byrow =
+FALSE)</p>
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <pre class="r"><code>class(m1)</code></pre>
 <pre><code>## [1] &quot;matrix&quot; &quot;array&quot;</code></pre>
 <pre class="r"><code>dim(m1)</code></pre>
@@ -423,22 +459,38 @@ FALSE)</p>
 <pre><code>## [1] &quot;v1&quot; &quot;v2&quot;</code></pre>
 <pre class="r"><code>rownames(m2)</code></pre>
 <pre><code>## NULL</code></pre>
+<<<<<<< HEAD
+=======
+</div>
+<div id="metadata" class="section level2">
+<h2>Metadata</h2>
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <p>Using these commands I can find out more information about the
 matrices. Note that dim() returns the dimensions of a matrix as vector
 and the order is row by column number. Column names are present because
 I bound two vectors with defined names and cbind() was used.</p>
+<<<<<<< HEAD
 </div>
 <div id="structure" class="section level2">
 <h2>Structure</h2>
+=======
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <pre class="r"><code>str(m2)</code></pre>
 <pre><code>##  num [1:4, 1:2] 1 2 3 4 6 7 8 9
 ##  - attr(*, &quot;dimnames&quot;)=List of 2
 ##   ..$ : NULL
 ##   ..$ : chr [1:2] &quot;v1&quot; &quot;v2&quot;</code></pre>
+<<<<<<< HEAD
 <p>The str() command provides a lot of details about the object.</p>
 </div>
 <div id="arrays" class="section level2">
 <h2>Arrays</h2>
+=======
+</div>
+<div id="structure" class="section level2">
+<h2>Structure</h2>
+<p>The str() command provides a lot of details about the object.</p>
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <pre class="r"><code>a &lt;- array(data = 1:90, dim = c(5, 6, 3))
 a</code></pre>
 <pre><code>## , , 1
@@ -467,13 +519,22 @@ a</code></pre>
 ## [3,]   63   68   73   78   83   88
 ## [4,]   64   69   74   79   84   89
 ## [5,]   65   70   75   80   85   90</code></pre>
+<<<<<<< HEAD
+=======
+</div>
+<div id="arrays" class="section level2">
+<h2>Arrays</h2>
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <p>This created an array with data all integers 1 through 90 arranged in
 3 levels, 5 rows by 6 columns This is a 3 dimensional array (there is a
 third dimension beyond rows and columns) Arrays can only have one class
 of data</p>
+<<<<<<< HEAD
 </div>
 <div id="subsetting" class="section level2">
 <h2>Subsetting</h2>
+=======
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <pre class="r"><code>v &lt;- 1:100
 v</code></pre>
 <pre><code>##   [1]   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18
@@ -486,21 +547,37 @@ v</code></pre>
 <pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15</code></pre>
 <pre class="r"><code>v[c(2, 4, 6, 8 ,10)] #creates vector of selected elements</code></pre>
 <pre><code>## [1]  2  4  6  8 10</code></pre>
+<<<<<<< HEAD
 <p>These are some basic ways of getting a few elements from a large
 vector</p>
 </div>
 <div id="subsetting-with-a-function-or-calculation" class="section level2">
 <h2>Subsetting with a Function or Calculation</h2>
+=======
+</div>
+<div id="subsetting" class="section level2">
+<h2>Subsetting</h2>
+<p>These are some basic ways of getting a few elements from a large
+vector</p>
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <pre class="r"><code>v &lt;- 101:200
 v[seq(from = 1, to = 100, by = 2)]</code></pre>
 <pre><code>##  [1] 101 103 105 107 109 111 113 115 117 119 121 123 125 127 129 131 133 135 137
 ## [20] 139 141 143 145 147 149 151 153 155 157 159 161 163 165 167 169 171 173 175
 ## [39] 177 179 181 183 185 187 189 191 193 195 197 199</code></pre>
+<<<<<<< HEAD
 <p>This subset selected integers counting by 2s, set by the dimensions
 in the from and to arguments</p>
 </div>
 <div id="challenge-1" class="section level2">
 <h2>Challenge 1</h2>
+=======
+</div>
+<div id="subsetting-with-a-function-or-calculation" class="section level2">
+<h2>Subsetting with a Function or Calculation</h2>
+<p>This subset selected integers counting by 2s, set by the dimensions
+in the from and to arguments</p>
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <pre class="r"><code>u &lt;- c(&quot;stately&quot;, &quot;plump&quot;, &quot;buck&quot;, &quot;mulligan&quot;, &quot;came&quot;, &quot;from&quot;, &quot;the&quot;, &quot;stairhead&quot;, &quot;bearing&quot;, &quot;a&quot;, &quot;bowl&quot;, &quot;of&quot;, &quot;lather&quot;, &quot;on&quot;, &quot;which&quot;, &quot;a&quot;, &quot;mirror&quot;, &quot;and&quot;, &quot;a&quot;, &quot;razor&quot;, &quot;lay&quot;, &quot;crossed&quot;)
 u</code></pre>
 <pre><code>##  [1] &quot;stately&quot;   &quot;plump&quot;     &quot;buck&quot;      &quot;mulligan&quot;  &quot;came&quot;      &quot;from&quot;     
@@ -510,6 +587,12 @@ u</code></pre>
 <pre class="r"><code>u[seq(from = 1, to = 22, by = 3)]</code></pre>
 <pre><code>## [1] &quot;stately&quot;  &quot;mulligan&quot; &quot;the&quot;      &quot;a&quot;        &quot;lather&quot;   &quot;a&quot;        &quot;a&quot;       
 ## [8] &quot;crossed&quot;</code></pre>
+<<<<<<< HEAD
+=======
+</div>
+<div id="challenge-1" class="section level2">
+<h2>Challenge 1</h2>
+>>>>>>> 520591f251c85e2774835c6c702b9ad04c9e8144
 <p>Trying again with the str_split() command leaving the pattern
 argument blank (just closed quotation marks) would break it up by
 character, adding the space broke it up by word.</p>
