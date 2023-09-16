@@ -10,7 +10,7 @@ library(dplyr)
 library(ggplot2)
 ```
 
-## Some useful procedures for exploratory data analysis
+## Some useful procedures for exploratory data analysis for univariate data
 
 ### Challenge 1
 
@@ -91,8 +91,8 @@ str(d)
 Next, I am using order() to ifnd the top 10 most dense countries and saving them to a new variable d_topdense.
 
 ```{r Challenge1-7, echo=TRUE}
-d_topdense <- order(d[, "pop_density"], na.last = TRUE, decreasing = TRUE)
-d_topdense[1:10]
+d_mostdense <- order(d[, "pop_density"], na.last = TRUE, decreasing = TRUE)
+d_mostdense[1:10]
 ```
 
 Doing this method only gives me the INDEXED POSITIONS of the countries (the row numbers) as a number vector. d_topdense is saved as an integer vector (just to prove a point). What I really want to see is a variable saved as a table or data frame so that I can look at the whole thing.
@@ -104,9 +104,9 @@ d_mostdense <- d[order(d$pop_density, na.last = TRUE, decreasing = TRUE), ]
 d_mostdense[1:10, ]
 ```
 
-I had some errors (undefined columns selected) with this until I googled the error and found I needed to add a comma after the closing parenthesis and a space following that. I think this is because we are subsetting the rows in the first half of the brackets and we are ordering those by populartion density. We are not doing anything with the columns so that is left blank. R needs to know I am not doing anything with the columns even if that is leaving it blank with a comma and a space.
+I had some errors (undefined columns selected) with this until I googled the error and found I needed to add a comma after the closing parenthesis and a space following that. I think this is because we are subsetting the rows in the first half of the brackets and we are ordering those by population density. We are not doing anything with the columns so that is left blank. R needs to know I am not doing anything with the columns even if that is leaving it blank with a comma and a space.
 
-The same thing happens when I subset the variable d_topdense for the first ten. Those are just the first ten rows, and I need to leave the column coordinate blank. If I do put in a coordinate for the column, it returns a integer vector of the values from the column (such as all of the density values but nothing else about them). Going back to the previous attempt at this, if I did add a column coordinate to that final line of code, I get an error saying incorrect number of dimensions. This is because d_topdense was only an integer vector in that case and not a data frame, so it only has one dimension.
+The same thing happens when I subset the variable d_mostdense for the first ten. Those are just the first ten rows, and I need to leave the column coordinate blank. If I do put in a coordinate for the column, it returns a integer vector of the values from the column (such as all of the density values but nothing else about them). Going back to the previous attempt at this, if I did add a column coordinate to that final line of code, I get an error saying incorrect number of dimensions. This is because d_mostdense was only an integer vector in that case and not a data frame, so it only has one dimension.
 
 Attempting the same thing but with the least dense countries:
 
@@ -245,3 +245,25 @@ detach(d)
 ```
 
 ### Challenge 4
+
+Tables : the table() function can be used to summarize counts and proportions for categorical variables in your dataset.
+
+Using the table() function, find what is the most common form of government in the Country-Data-2016 dataset. How many countries have that form? 
+
+```{r Challenge4-1, echo=TRUE}
+table(d$govt_form)
+```
+
+Using just the table function returns a list of all of the observations in the column requested and how many of each (e.g., there are 33 observations of constitutional monarchy)
+
+```{r Challenge4-2, echo=TRUE}
+sort(table(d$govt_form), decreasing = TRUE)
+```
+
+Remember that order() returns the indexed position (as seen earlier when I tried using it not inside bracket notation). Sort() returns the vector in order. 
+
+**The most common form of government from the dataset is republic with 127 countries claiming that form.**
+
+## Multivariate Data
+
+### Challenge 5
