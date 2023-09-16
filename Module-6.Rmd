@@ -156,3 +156,40 @@ Both summary() and mean() will get us the data requested which is mean area and 
 
 ### Challenge 2
 
+Using Boxplots and Barplots
+
+Boxplots: boxplot() functions returns a box and whiskers visual of the summary data from a column plus the outliers. Does not like nonnumeric data so must be used with specific columns using bracket of $ notation
+
+Barplots: barplot() function returns a bar graph with bar height proportional to the value of the variable. dotchart() provides similar. Barplots are good for crude data
+
+#### Make boxplots of the raw population and area data, then do the same after log() transforming these variables.
+
+```{r Challenge2-1, echo=TRUE}
+boxplot(d$population)
+boxplot(log(d$population))
+boxplot(d$area)
+boxplot(log(d$area))
+```
+
+Using log makes it so much more readable
+
+Using par() with mfrow (filled in by row) as the argument will arrange the boxplots accordingly:
+
+```{r Challenge2-2, echo=TRUE}
+par(mfrow = c(2,2))
+boxplot(d$population)
+boxplot(log(d$population))
+boxplot(d$area)
+boxplot(log(d$area))
+```
+
+And now the barplots of population and area:
+
+```{r Challenge2-2, echo=TRUE}
+barplot(d$population)
+barplot(d$area)
+```
+
+These plots do not mean much without labels.
+
+### Challenge 3
