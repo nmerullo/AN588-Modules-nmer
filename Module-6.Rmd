@@ -160,7 +160,7 @@ Using Boxplots and Barplots
 
 Boxplots: boxplot() functions returns a box and whiskers visual of the summary data from a column plus the outliers. Does not like nonnumeric data so must be used with specific columns using bracket of $ notation
 
-Barplots: barplot() function returns a bar graph with bar height proportional to the value of the variable. dotchart() provides similar. Barplots are good for crude data
+Barplots: barplot() function returns a bar plot with bar height proportional to the value of the variable. dotchart() provides similar. Barplots are good for crude data
 
 #### Make boxplots of the raw population and area data, then do the same after log() transforming these variables.
 
@@ -193,3 +193,55 @@ barplot(d$area)
 These plots do not mean much without labels.
 
 ### Challenge 3
+
+#### Histograms 
+The hist() function returns a histogram showing the complete empirical distribution of the data in binned categories, which is useful for checking skewness of the data, symmetry, multi-modality, etc. Setting the argument freq=FALSE will scale the Y axis to represent the proportion of observations falling into each bin rather than the count.
+
+Make histograms of the log() transformed population and area data from the Country-Data-2016 file. Explore what happens if you set freq=FALSE versus the default of freq=TRUE. Try looking at other variables as well.
+
+First attempt will just be with inputting the data to be turned into a histogram with no modifications to the variables.
+
+```{r Challenge3-1, echo=TRUE}
+par(mfrow = c(1, 2))
+hist(log(d$population))
+hist(log(d$area))
+```
+
+Frequency defaults to true, which is the y-axis. This is showing how frequent each population is and how frequent each area is (grouped up into bars that are equi-spaced by breaks). Breaks are another argument that can be modified.
+
+If I use attach() then I don't need to use $ notation anymore and R will search just for the name of the column I am making a plot of
+
+This time I will set freq to false which will make the y axis looking at density instead of frequency.I will also name the axes and the plot.
+
+```{r Challenge3-2, echo=TRUE}
+attach(d)
+par(mfrow = c(1, 2))
+hist(log(population), freq = FALSE, col = "orchid3", main = "Plot 1", xlab = "log(population size)", ylab = "density")
+hist(log(area), freq = FALSE, col = "darkolivegreen4", main = "Plot 2", xlab = "log(area)", ylab = "density")
+```
+
+The y limits are not the same like they were with the freq=true histograms. That can be changed with an argument modification.
+
+adding vertical lines showing mean of x axis.
+
+```{r Challenge3-2, echo=TRUE}
+par(mfrow = c(1, 2))
+hist(log(population), freq = FALSE, col = "orchid3", main = "Plot 1", xlab = "log(population size)", ylab = "density", ylim = c(0, 0.2))
+abline(v = mean(log(population), na.rm = TRUE), col = "hotpink")
+hist(log(area), freq = FALSE, col = "darkolivegreen4", main = "Plot 2", xlab = "log(area)", ylab = "density", ylim = c(0, 0.2))
+abline(v = mean(log(area), na.rm = TRUE), col = "hotpink")
+```
+
+#### Density Plot
+The density() function computes a non-parametric estimate of the distribution of a variable, which can be combined with plot() to also yield a graphical view of the distribution of the data. If your data have missing values, then you need to add the argument na.rm=TRUE to the density() function. To superimpose a density() curve on a histogram, you can use the lines(density()) function.
+
+```{r Challenge3-3, echo=TRUE}
+par(mfrow = c(1, 1))  # set up one panel and redraw the log(population) histogram
+hist(log(population), freq = FALSE, col = "lemonchiffon", main = "My Plot with Mean and Density",
+    xlab = "log(population size)", ylab = "density", ylim = c(0, 0.2))
+abline(v = mean(log(population), na.rm = TRUE), col = "hotpink")
+lines(density(log(population), na.rm = TRUE), col = "aquamarine4")
+detach(d)
+```
+
+### Challenge 4
