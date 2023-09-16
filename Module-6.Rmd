@@ -1,0 +1,34 @@
+---
+title: "Module-6"
+author: "Nicole Merullo"
+date: "2023-09-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+## Some useful proceudures for exploratory data analysis
+
+### Challenge 1
+
+Using summary() to get an overview of data from each column in a given data frame
+Includes (for numeric data):
+1. minimum
+2. 25th percentile
+3. median
+4. mean
+5. 75th percentile
+6 maximum
+7. count of NAs (missing values)
+For Factors:
+1. Count of each factor level (how many 1s, 2s, 3s)
+
+```{r Challenge1-1, echo=TRUE}
+f <- "~/Documents/BU/AN_588/AN588-Modules-nmer/country-data-2016.csv"
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactor = FALSE)
+head(d)
+```
+
