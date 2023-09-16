@@ -10,7 +10,7 @@ library(dplyr)
 library(ggplot2)
 ```
 
-## Some useful proceudures for exploratory data analysis
+## Some useful procedures for exploratory data analysis
 
 ### Challenge 1
 
@@ -26,9 +26,133 @@ Includes (for numeric data):
 For Factors:
 1. Count of each factor level (how many 1s, 2s, 3s)
 
+First load in the file
+
 ```{r Challenge1-1, echo=TRUE}
 f <- "~/Documents/BU/AN_588/AN588-Modules-nmer/country-data-2016.csv"
 d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactor = FALSE)
 head(d)
 ```
+Now use summary()
+
+```{r Challenge1-2, echo=TRUE}
+summary(d)
+```
+Let's check out the names of the columns
+
+```{r Challenge1-3, echo=TRUE}
+names(d)
+```
+#### What are the median **area** and **population size** of all countries in the data set? 
+
+This is given in the summary so I can look back at the output and read it. 
+The area median is 69700
+The population median is 4.912e+06 (or 4,912,000)
+
+To try pulling this more cleanly I can try the following using summary()
+
+```{r Challenge1-4, echo=TRUE}
+popsumm <- summary(d$population)
+popsumm
+areasumm <- summary(d[3])
+areasumm
+popsumm[3]
+areasumm[3]
+```
+
+I used two different indexing/subsetting notations to create new objects that were then indexed again for just the median. 
+
+Because the columns are named, the $ notation can be used before the name of the column which returns a 'summaryDefault' structure. When that is indexed for the third position (median), it returns a table. 
+
+I used bracket notation for area summary which output a table. I indexed the table for the third position which returned a character vector.
+
+I am not sure there is anything meaningful to these distinctions but might be useful in the future.
+
+Now I will try using the median() function. na.rm is set to TRUE to remove the NA values from being considered.
+
+```{r Challenge1-5, echo=TRUE}
+median(d$population, na.rm = TRUE)
+median(d$area, na.rm = TRUE)
+```
+
+Ok, this is way less clunky than the multiple functions I had to use for summary to make it as clean as this. The $ notation was the only one that worked for this one. [] notation did not work and returned an error "Error in median.default(d[3], na.rm = TRUE) : need numeric data"
+
+#### Create a new pop_density variable in your data frame which is population / area. What are the 10 most dense countries? The 10 least dense?
+
+First, I am using cbind() to add the pop_density variable as column and saving that into the d variable. I am using str() to ensure that the class of pop_density is numbers.
+
+```{r Challenge1-6, echo=TRUE}
+pop_density <- d$population/d$area
+d <- cbind(d, pop_density)
+head(d)
+str(d)
+```
+
+Next, I am using order() to ifnd the top 10 most dense countries and saving them to a new variable d_topdense.
+
+```{r Challenge1-7, echo=TRUE}
+d_topdense <- order(d[, "pop_density"], na.last = TRUE, decreasing = TRUE)
+d_topdense[1:10]
+```
+
+Doing this method only gives me the INDEXED POSITIONS of the countries (the row numbers) as a number vector. d_topdense is saved as an integer vector (just to prove a point). What I really want to see is a variable saved as a table or data frame so that I can look at the whole thing.
+
+If I used order() inside index brackets I will be indexing just the ordered table.
+
+```{r Challenge1-8, echo=TRUE}
+d_mostdense <- d[order(d$pop_density, na.last = TRUE, decreasing = TRUE), ]
+d_mostdense[1:10, ]
+```
+
+I had some errors (undefined columns selected) with this until I googled the error and found I needed to add a comma after the closing parenthesis and a space following that. I think this is because we are subsetting the rows in the first half of the brackets and we are ordering those by populartion density. We are not doing anything with the columns so that is left blank. R needs to know I am not doing anything with the columns even if that is leaving it blank with a comma and a space.
+
+The same thing happens when I subset the variable d_topdense for the first ten. Those are just the first ten rows, and I need to leave the column coordinate blank. If I do put in a coordinate for the column, it returns a integer vector of the values from the column (such as all of the density values but nothing else about them). Going back to the previous attempt at this, if I did add a column coordinate to that final line of code, I get an error saying incorrect number of dimensions. This is because d_topdense was only an integer vector in that case and not a data frame, so it only has one dimension.
+
+Attempting the same thing but with the least dense countries:
+
+```{r Challenge1-9, echo=TRUE}
+d_leastdense <- d[order(d$pop_density, na.last = TRUE, decreasing = FALSE), ]
+d_leastdense[1:10, ]
+```
+
+#### Extract data from the 20 largest countries into a new variable. What are the median area and population size of these countries?
+
+A country can be large by population or by area. I will do it by both I guess.
+
+By area first:
+
+```{r Challenge1-10, echo=TRUE}
+d_bigarea <- d[order(d$area, na.last = TRUE, decreasing = TRUE), ]
+d_bigarea <- d_bigarea[1:20, ]
+d_bigarea
+median(d_bigarea$population, na.rm = TRUE)
+median(d_bigarea$area, na.rm = TRUE)
+```
+
+By population:
+
+```{r Challenge1-11, echo=TRUE}
+d_bigpop <- d[order(d$population, na.last = TRUE, decreasing = TRUE), ]
+d_bigpop <- d_bigpop[1:20, ]
+d_bigpop
+median(d_bigpop$population, na.rm = TRUE)
+median(d_bigpop$area, na.rm = TRUE)
+```
+
+#### Extract data from all countries beginning with the letters “A” through “F”. What are the mean area and population size of these countries?
+
+Will need to use grep() for this which finds a pattern (in this case letters A through F) in a given character vector (in this case the column Countries). Note that note every column is a character class so this would not work on every column.
+
+The extraction is similar to the order() extraction where the function is placed inside the bracket notation as the row dimension coordinate, and the column dimension is left blank.
+
+```{r Challenge1-12, echo=TRUE}
+alphabet <- d[grep("^[A-F]", d$country), ]
+summary(alphabet)
+mean(alphabet$population, na.rm = TRUE)
+mean(alphabet$area, na.rm = TRUE)
+```
+
+Both summary() and mean() will get us the data requested which is mean area and population size of these 78 subset countries.
+
+### Challenge 2
 
