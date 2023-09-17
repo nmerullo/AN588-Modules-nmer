@@ -535,3 +535,5 @@ p4 <- p4 + theme(legend.position = "bottom", legend.title = element_blank())
 p4 <- p4 + scale_color_manual(breaks = c("Atelidae", "Cercopithecidae"), values = c("purple", "green"))
 p4
 ```
+
+This is where I found how to change the colors: http://www.sthda.com/english/wiki/ggplot2-colors-how-to-change-colors-automatically-and-manually#:~:text=%2C%20c%20%3D%20100.-,Change%20colors%20manually,()%20for%20lines%20and%20points

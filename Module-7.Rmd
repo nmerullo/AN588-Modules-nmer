@@ -1,0 +1,19 @@
+---
+title: "Module-7"
+author: "Nicole Merullo"
+date: "2023-09-17"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+    toc: true
+---
+```{r setup, echo=FALSE}
+![Titi Monkey from Denver7 News](~/Documents/BU/AN_588/AN588-Modules-nmer/titimonkey1.png)
+```
+
+```{r setup, include=FALSE}
+library(prettydoc)
+```
+
+
