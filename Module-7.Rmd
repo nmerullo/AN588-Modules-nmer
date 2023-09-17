@@ -206,9 +206,7 @@ For a random variable, how is variance related to sample size? Let’s explore t
 for (counter in vector){code to run}
 ```{r Challenge3-5, echo=TRUE}
 plot(c(0, 50), c(0, 15), type = "n", xlab = "Sample Size", ylab = "Variance")
-for (n in seq(5, 50, 5)) # samples of 5, 10, 15... for (n in seq(5, 50,
-for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 5)) # samples of 5, 10,
-for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 15...
+for (n in seq(5, 50, 5))
 {
     for (i in 1:50) # 50 replicates for (i in 1:50) # 50 replicates
     {
@@ -237,6 +235,7 @@ sample_sd(x)
 ```
 
 My answers are off from the instructions but I cannot identify where the issue is. Will have to revisit.
+Note: revisiting- and realized that everytime I run the plot, it gives different simulated random variables so my numbers will always be different but the sd results should be similar (which they are) because we are assuiming normal distrbution.
 
 ### Challenge 4 Using Measures of Spread
 
