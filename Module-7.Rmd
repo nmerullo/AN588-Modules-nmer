@@ -11,7 +11,99 @@ output:
 ```{r titimonkey, echo=FALSE, fig.align='center', fig.cap='Cinnamon,the titi monkey from the Denver Zoo', out.width='25%'}
 knitr::include_graphics('~/Documents/BU/AN_588/AN588-Modules-nmer/titimonkey1.png')
 ```
+```{r setup, include=FALSE}
+library(sciplot)
+```
 
+## Central Tendency and Variance
 
+Central tendency are where things tend to go- different way of measuring averages. 
+Just pasting in the terms and definitions from the instructions for reference:
 
+**Population** = includes all of the elements from a set of data (e.g., all of the vervet monkeys in the world) = N
+**Sample** = one or more observations from a population (e.g., the set of vervets living in South Africa, the set of vervet skeletons found in a museum) = n
+**Parameter** = a measurable characteristic of a population (e.g., the mean value of the femur length of all vervets)
+**Statistic** = a measurable characteristic about a sample (e.g., the mean femur length of vervet monkey femurs found at the American Museum of Natural History)
 
+Measures of Central Tendency 
+**Mode** = most common measurement of values observed
+**Median** = middle value in a rank ordered series of values
+**Mean** = the sum of measured values divided by n = the average or the arithmetic mean
+**Harmonic mean** = the reciprocal of the average of the reciprocals of a set of values.
+**Geometric mean** = a measure of central tendency for processes that are multiplicative rather than additive = the nth root of the product of the values (for the mathematically inclindes, it also = the antilog of the averaged log values).
+
+### Challenge 1 Measures of Central Tendency
+
+write a function to determine the geometric mean of the values in a vector.
+
+```{r Challenge1-1, echo=TRUE}
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 25, 50, 100, 200, 1000)
+gm1 <- function(x) {
+    prod(x)^(1/length(x))
+}
+gm1(x)
+```
+
+So this is the products of each integer in the vector raised to the exponent 1/# of elements in the vector
+```{r Challenge1-2, echo=TRUE}
+p <- prod(x) #multiplying all of these elements together
+p
+l <- length(x)
+l
+p^(1/l)
+```
+Another way of making this function:
+
+```{r Challenge1-3, echo=TRUE}
+gm2 <- function(x) {
+    exp(mean(log(x)))
+}
+gm2(x)
+```
+
+Same answer. exponential of the mean of the logarithm of x
+
+```{r Challenge1-4, echo=TRUE}
+x1 <- log(x)
+x1
+x2 <- mean(x1)
+x2
+exp(x2)
+```
+
+What happens if you have NAs or zeros or negative numbers in the vector?
+
+Negative:
+
+```{r Challenge1-5, echo=TRUE}
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 25, -50, 100, 200, 1000)
+gm1 <- function(x) {
+    prod(x)^(1/length(x))
+}
+gm1(x)
+```
+
+Geometric mean only works with positive numbers
+
+NA Value:
+
+```{r Challenge1-5, echo=TRUE}
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 25, 50, 100, 200, 1000, NA)
+gm1 <- function(x) {
+    prod(x, na.rm = TRUE)^(1/length(x))
+}
+gm1(x)
+```
+This gives a different answer than before because the length of the vector is longer but I was able to remove the NA value in the prod function.
+
+### Challenge 2 Measures of Spread
+
+Copying from the instructions for reference:
+
+A measure of spread or variability in a dataset is one of the most important summary statistics to calculate. The range (min to max) is one measure of spread as is the interquartile range (25th to 75th quartile). As we’ve seen, these are returned by the summary() function.
+
+We commonly characterize spread, however, in terms of the **deviation of values from the mean**. One such measure is the sum of squares…
+
+**sum of squares** = the sum of the squared deviations of a set of values from the mean
+
+[Why do we use the sum of the squared deviations of values from the mean rather than just the sum of deviations? Because the latter would simply be ZERO.] *one would be positive and one would be negative...?*
