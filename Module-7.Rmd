@@ -87,7 +87,7 @@ Geometric mean only works with positive numbers
 
 NA Value:
 
-```{r Challenge1-5, echo=TRUE}
+```{r Challenge1-6, echo=TRUE}
 x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 25, 50, 100, 200, 1000, NA)
 gm1 <- function(x) {
     prod(x, na.rm = TRUE)^(1/length(x))
@@ -191,7 +191,7 @@ It gets smaller
 
 Testing population variance with y vector (more elements)
 
-```{r Challenge3-3, echo=TRUE}
+```{r Challenge3-4, echo=TRUE}
 pop_v(y)
 sum((y - mean(y))^2)/length(y)
 ```
@@ -204,7 +204,7 @@ For a random variable, how is variance related to sample size? Let’s explore t
 [2] Create a random variable drawn from a normal distribution using the rnorm() function. Let’s use for loops to do this for samples of size 5, 10, 15… up to 50, with 50 replicates at each size. The structure for for loops is…
 
 for (counter in vector){code to run}
-```{r Challenge3-4, echo=TRUE}
+```{r Challenge3-5, echo=TRUE}
 plot(c(0, 50), c(0, 15), type = "n", xlab = "Sample Size", ylab = "Variance")
 for (n in seq(5, 50, 5)) # samples of 5, 10, 15... for (n in seq(5, 50,
 for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 5)) # samples of 5, 10,
@@ -220,7 +220,7 @@ for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 15...
 
 **Standard Deviation** is simply the square root of the variance (taking the sum of squares to the population variance by averaging it and now square rooting it)
 
-```{r Challenge3-5, echo=TRUE}
+```{r Challenge3-6, echo=TRUE}
 pop_sd <- function(x) {
     sqrt(pop_v(x))
 }
@@ -229,7 +229,7 @@ pop_sd(x)
 
 Alternatively with sample variance:
 
-```{r Challenge3-6, echo=TRUE}
+```{r Challenge3-7, echo=TRUE}
 sample_sd <- function(x) {
     sqrt(sample_v(x))
 }
@@ -289,3 +289,107 @@ We can calculate this by multiplying our estimate of the standard error by the q
 
 Let’s take a quick look at the NORMAL DISTRIBUTION. Here, we use the rnorm() function to sample 10000 numbers from a normal distribution with mean = 0 and standard deviation = 1. [I am using set.seed() here so that each time I run this function, I return the same set of random numbers.]
 
+```{r CI-1, echo=TRUE}
+set.seed(1)
+x <- rnorm(10000, 0, 1)
+hist(x)
+```
+
+plot the density and probability distributions for a normal distribution. In these plots, cex= sets the size of the points being plotted.
+
+```{r CI-2, echo=TRUE}
+x <- seq(from = -4, to = 4, by = 0.01)
+plot(x, dnorm(x), cex = 0.4)
+plot(x, pnorm(x), cex = 0.4)
+x <- seq(from = 0, to = 1, by = 0.01)
+plot(qnorm(x), x, cex = 0.4)
+```
+
+Calculating CI given this vector:
+
+```{r CI-3, echo=TRUE}
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+m <- mean(x)
+n <- length(x)
+v <- var(x)
+s <- sd(x)
+e <- sqrt(v/n)
+upper <- mean(x) + qnorm(0.975, mean = 0, sd = 1) * se(x)
+lower <- mean(x) + qnorm(0.025, mean = 0, sd = 1) * se(x)  # or lower <- mean(x) - qnorm(0.975)*se(x)
+ci <- c(lower, upper)
+ci
+```
+
+So if we sampled again we would most likely fall between 5.73 and 10.26 95% of the time?
+
+Another way of doing this:
+
+```{r CI-4, echo=TRUE}
+upper <- m + qnorm(0.975, mean = 0, sd = 1) * e
+lower <- m + qnorm(0.025, mean = 0, sd = 1) * e  # or lower <- m - qnorm(0.975)*e
+ci <- c(lower, upper)
+ci
+```
+
+And to make a CI function:
+
+```{r CI-5, echo=TRUE}
+normalCI = function(x, CIlevel = 0.95) {
+    upper = m + qnorm(1 - (1 - CIlevel)/2) * sqrt(var(x)/length(x))
+    lower = m + qnorm((1 - CIlevel)/2) * sqrt(var(x)/length(x))
+    ci <- c(lower, upper)
+    return(ci)
+}
+normalCI(x, 0.95)
+```
+
+### Challenge 5 Calculating CI by Bootstrapping
+can calculate CI by simulation and does not presume the underlying distribution of the sample. 
+
+Here, we use the sample() function to sample, with replacement, 15 numbers from our vector x a total of 10000 times.
+
+So we basically are making it be a random number generator between 1 and 15 10k times. 
+
+```{r Challenge 5-1, echo=TRUE}
+set <- NULL #dummy variable to hold the 10k simulations
+n <- 15 #that's the length of x
+for (i in 1:10000) {
+  set [i] <- mean(sample(x, n, replace = TRUE))
+} #using loops!!
+```
+
+And then we can use quantile to see how the 10,000 numbers fall into different quantiles. Then we can make it look at the lower and upper probabilities (?)
+
+```{r Challenge 5-2, echo=TRUE}
+quantile(set)
+quantile(set, c(0.025, 0.975))
+```
+
+How does the CI calculated this way, by simulation, compare to that calculated based on assuming a normal distribution?
+
+The results were extremely similar suggesting that at 10,000 observations the sample starts to normalize
+
+How does the width of the CI change with decreasing or increasing n (the number of observations drawn from your sample with replacement)? For example, if we set n at 5? At 50? At 500?
+
+```{r Challenge 5-3, echo=TRUE}
+set <- NULL #dummy variable to hold the 10k simulations
+n <- 15 #that's the length of x
+for (i in 1:5) {
+  set [i] <- mean(sample(x, n, replace = TRUE))
+} 
+quantile(set)
+quantile(set, c(0.025, 0.975))
+```
+So with only 5 samples the width gets smaller.  
+
+```{r Challenge 5-4, echo=TRUE}
+set <- NULL #dummy variable to hold the 10k simulations
+n <- 15 #that's the length of x
+for (i in 1:500) {
+  set [i] <- mean(sample(x, n, replace = TRUE))
+} 
+quantile(set)
+quantile(set, c(0.025, 0.975))
+```
+
+By 500 it starts to get closer to the normal distribution.
