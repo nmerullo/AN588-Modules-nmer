@@ -267,3 +267,48 @@ Remember that order() returns the indexed position (as seen earlier when I tried
 ## Multivariate Data
 
 ### Challenge 5
+
+Multiple boxplots or histograms can be laid out side-by-side or overlaid. For boxplots, the ~ operator can be read as “by”.
+
+Read in the dataset KamilarAndCooperData, which contains a host of information from about 213 living primate species.
+
+Spend some time exploring the data and then make boxplots of log(female body mass) ~ family. Try doing this with {base} graphics and then look at how we might do in in {ggplot2}, which provides a standard “grammar of graphics” (see the {ggplot2} documentation)
+
+```{r Challenge5-1, echo=TRUE}
+f1 <- "~/Documents/BU/AN_588/AN588-Modules-nmer/KamilarAndCooperData.csv"
+k <- read.csv(f1, header = TRUE, sep = ",", stringsAsFactor = FALSE)
+summary(k)
+attach(k)
+```
+#### Boxplots
+The column specified after the ~ goes on the X axis. This is non-numerical data otherwise it would not be able to be passed through the boxplot.
+```{r Challenge5-2, echo=TRUE}
+boxplot(log(Body_mass_female_mean) ~ Family)
+detach(d)
+```
+
+The module instructions are: boxplot(log(Body_mass_female_mean) ~ Family, k) 
+I do not see a difference adding the file variable at the end and I cannot find anything in the documentation for boxplot() for it.
+
+Also in this plot not every family name is listed on the x axis.
+
+#### ggplot2
+
+With ggplot, we can add to the object little by little for ease of reading.
+
+Here is a breakdown of the lines of code below
+1. defining the variables
+2. graph into a box plot
+3. rename y axis
+4. run the graph
+
+```{r Challenge5-3, echo=TRUE}
+p <- p <- ggplot(data = k, aes(x = Family, y = log(Body_mass_female_mean)))
+p <- p + geom_boxplot()
+p <- p + theme(axis.text.x = element_text(angle = 90))
+p <- p + ylab("log(Female Body Mass)")
+p
+```
+
+### Challenge 6
+
