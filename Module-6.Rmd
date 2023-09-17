@@ -421,7 +421,7 @@ So first we have all of Atelidae arranged then genus Alouatta then body mass inc
 
 ```{r Aggregate-4, echo=TRUE}
 s <- arrange(k, Family, Genus, Body_mass_male_mean)
-s
+head(s)
 ```
 
 select() just lets you see those columns
