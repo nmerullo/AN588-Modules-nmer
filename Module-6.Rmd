@@ -522,14 +522,14 @@ Compare the body size of my two main study taxa at the Family level (i.e., Cerco
 ```{r Challenge8-2, echo=TRUE}
 monkeys <- filter(k, Family == "Cercopithecidae" | Family == "Atelidae")
 par(mfrow = c(1, 2))
-p3 <- ggplot(data = monkeys, aes(x = Mass_Dimorphism, y = Body_mass_female_mean, color = factor(Family)))
-p3 <- p3 + xlab("Mass Dimorphism") + ylab("Mean Body Mass Female")
+p3 <- ggplot(data = monkeys, aes(x = Body_mass_female_mean, y = Mass_Dimorphism, color = factor(Family)))
+p3 <- p3 + xlab("Mean Body Mass Female") + ylab("Mass Dimorphism")
 p3 <- p3 + geom_point()
 p3 <- p3 + theme(legend.position = "bottom", legend.title = element_blank())
 p3 <- p3 + scale_color_manual(breaks = c("Atelidae", "Cercopithecidae"), values = c("purple", "green"))
 p3
-p4 <- ggplot(data = monkeys, aes(x = Mass_Dimorphism, y = Body_mass_male_mean, color = factor(Family)))
-p4 <- p4 + xlab("Mass Dimorphism") + ylab("Mean Body Mass Male")
+p4 <- ggplot(data = monkeys, aes(x = Body_mass_male_mean, y = Mass_Dimorphism, color = factor(Family)))
+p4 <- p4 + xlab("Mean Body Mass Male") + ylab("Mass Dimorphism")
 p4 <- p4 + geom_point()
 p4 <- p4 + theme(legend.position = "bottom", legend.title = element_blank())
 p4 <- p4 + scale_color_manual(breaks = c("Atelidae", "Cercopithecidae"), values = c("purple", "green"))
