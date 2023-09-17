@@ -284,7 +284,7 @@ attach(k)
 The column specified after the ~ goes on the X axis. This is non-numerical data otherwise it would not be able to be passed through the boxplot.
 ```{r Challenge5-2, echo=TRUE}
 boxplot(log(Body_mass_female_mean) ~ Family)
-detach(d)
+detach(k)
 ```
 
 The module instructions are: boxplot(log(Body_mass_female_mean) ~ Family, k) 
@@ -299,11 +299,12 @@ With ggplot, we can add to the object little by little for ease of reading.
 Here is a breakdown of the lines of code below
 1. defining the variables
 2. graph into a box plot
-3. rename y axis
-4. run the graph
+3. put x-axis names at 90deg to the axis
+4. rename y axis
+5. run the graph
 
 ```{r Challenge5-3, echo=TRUE}
-p <- p <- ggplot(data = k, aes(x = Family, y = log(Body_mass_female_mean)))
+p <- ggplot(data = k, aes(x = Family, y = log(Body_mass_female_mean)))
 p <- p + geom_boxplot()
 p <- p + theme(axis.text.x = element_text(angle = 90))
 p <- p + ylab("log(Female Body Mass)")
@@ -312,3 +313,54 @@ p
 
 ### Challenge 6
 
+Scatterplots with base vs ggplot2
+
+Scatterplots : Scatterplots are a natural tool for visualizing two continuous variables and can be made easily with the plot(x=XXX, y=YYY) function in {base} graphics (where XXX* and YYY** denote the names of the two variables you wish to plot). Transformations of the variables, e.g., log or square-root (sqrt()), may be necessary for effective visualization.
+
+Again using data from the KamilarAndCooperData dataset, plot the relationship between female body size and female brain size. Then, play with log transforming the data and plot again.
+
+#### Base Graphics
+
+```{r Challenge6-1, echo=TRUE}
+attach(k)
+par(mfrow = c(1, 2))
+plot(x = Body_mass_female_mean, y = Brain_Size_Female_Mean)
+plot(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean))
+detach(k)
+```
+
+Did this to show the difference between no log and with log. With log is like zooming in and getting a better view of the data.
+
+#### ggplot2
+
+Following similar steps from the boxplot- will do a scatterplot with the same data as above
+1. defining the variables and data and color coding the plot points by Family column
+2. modify the axis labels (this was step 4 before)
+3. make the scatterplot (step 2 before)
+4. modify the legend at the bottom (kind of equivalent to step 3 before)
+4. run the graph
+
+```{r Challenge6-2, echo=TRUE}
+p1 <- ggplot(data = k, aes(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean), color = factor(Family)))
+p1 <- p1 + xlab("log(Female Body Mass)") + ylab("log(Female Brain Size)")
+p1 <- p1 + geom_point()
+p1 <- p1 + theme(legend.position = "bottom", legend.title = element_blank())
+p1
+```
+
+Grid for faceting by a grouping variable
+
+```{r Challenge6-3, echo=TRUE}
+p1 <- p1 + facet_wrap(~Family, ncol = 4)
+p1 <- p1 + theme(legend.position = "none")
+p1
+```
+
+And then add regression lines
+
+```{r Challenge6-4, echo=TRUE}
+p1 <- p1 + geom_smooth(method = "lm", fullrange = TRUE)
+p1
+```
+
+### Challenge 7
