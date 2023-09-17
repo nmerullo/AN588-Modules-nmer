@@ -200,18 +200,12 @@ It is also smaller than x but it's also smaller than sample variance (just like 
 
 For a random variable, how is variance related to sample size? Let’s explore this…
 
-[1] plot:
-
-```{r Challenge3-4, echo=TRUE}
-plot(c(0, 50), c(0, 15), type= "n", xlab = "Sample Size", ylab = "Variance")
-```
-
+[1] plot
 [2] Create a random variable drawn from a normal distribution using the rnorm() function. Let’s use for loops to do this for samples of size 5, 10, 15… up to 50, with 50 replicates at each size. The structure for for loops is…
 
 for (counter in vector){code to run}
-
 ```{r Challenge3-4, echo=TRUE}
-plot(c(0, 50), c(0, 15), type= "n", xlab = "Sample Size", ylab = "Variance")
+plot(c(0, 50), c(0, 15), type = "n", xlab = "Sample Size", ylab = "Variance")
 for (n in seq(5, 50, 5)) # samples of 5, 10, 15... for (n in seq(5, 50,
 for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 5)) # samples of 5, 10,
 for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 15...
@@ -243,4 +237,55 @@ sample_sd(x)
 ```
 
 My answers are off from the instructions but I cannot identify where the issue is. Will have to revisit.
+
+### Challenge 4 Using Measures of Spread
+
+Copied from the instructions for reference:
+We would also like to have an idea, based on characteristics of our sample, how reliable or unreliable our estimates of population parameters based on those samples are. In general, we would expect such a measure of uncertainty, or error, to increase with the variability in our sample (estimates with high variability are more uncertain) and to decrease as we sample more. That is, it should be proportional to the ratio of variance to sample size.
+
+Also, ideally, the units for our estimate of error should be the same as those of our original measurements. Since the ratio above would be expressed in square units (since sample size is dimensionless), we can take the square root to express it in units.
+
+The standard error of the mean, based on a sample, can thus be defined as follows:
+
+**SE mean** = square root of the average sample variance
+
+or
+
+**SE mean** = square root of (sample variance / number of observations)
+
+or
+
+**SE mean** = (sample standard deviation) / square root of (number of observations)
+
+Write a function of SE mean
+
+```{r Challenge4-1, echo=TRUE}
+SE1 <- function(x){
+  sqrt(var(x)/length(x))
+}
+SE1(x)
+```
+
+Once again my answers are off and it doesn't match up whether I change my x vector back to the original or not. It's closer as it is from the plot so I'm going to leave it.
+
+sciplot has a standard error function
+
+```{r Challenge4-2, echo=TRUE}
+se(x)
+```
+
+## Calculating Confidence Intervals using Standard Errors
+Pasting most of this from the instructions for reference:
+
+A **confidence interval** shows the likely range of values into which an estimate would fall if the sampling exercise were to be repeated
+
+We can talk about different confidence intervals (e.g., 50%, 95%, 99%), and the higher the confidence we want to have, the wider the interval will be.
+
+The 95% confidence interval, then, describes the range of values into which a statistic, calculated based on a repeated sample, would be expected to fall 95% of the time.  We typically estimate confidence intervals with respect to specific theoretical distributions (e.g., normal, Poisson, Student’s t, F) and different characteristics about our sample (e.g., mean, standard deviation, degrees of freedom).
+
+For example, suppose we wanted to calculate a 95% confidence interval around our estimate of the mean for a particular set of observations, assuming those data reflect a random variable that is normally distributed and that our observations are independent. We would simply find the values corresponding to the numbers of standard errors away from the mean our statistic would be expected to fall 95% of the time.
+
+We can calculate this by multiplying our estimate of the standard error by the quantile normal (qnorm()) function. Basically, we give the qnorm() function a quantile, and it returns the value of X below which that proportion of the cumulative probability function falls. For example, qnorm(0.025, mean=0, sd=1) tells us the number of standard deviations away from the mean that correspond with up to 2.5% of of the normal distribution with mean=0 and sd=1. qnorm(0.975, mean=0, sd=1) tells us the number of standard deviations up to which 97.5% of observations should fall.
+
+Let’s take a quick look at the NORMAL DISTRIBUTION. Here, we use the rnorm() function to sample 10000 numbers from a normal distribution with mean = 0 and standard deviation = 1. [I am using set.seed() here so that each time I run this function, I return the same set of random numbers.]
 
