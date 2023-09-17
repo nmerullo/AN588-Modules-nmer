@@ -107,3 +107,140 @@ We commonly characterize spread, however, in terms of the **deviation of values 
 **sum of squares** = the sum of the squared deviations of a set of values from the mean
 
 [Why do we use the sum of the squared deviations of values from the mean rather than just the sum of deviations? Because the latter would simply be ZERO.] *one would be positive and one would be negative...?*
+
+Write a function to calculate the sum of squares for a vector
+
+```{r Challenge2-1, echo=TRUE}
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 25, 50, 100, 200, 1000)
+mean(x) #first calculate the mean from which we will find the deviations
+x - mean(x) #finding the deviations from the mean (each element in the vector to/from the mean)
+(x - mean(x))^2 #squaring the deviations (each one)
+sum((x - mean(x))^2) #summing the squared deviations
+#and here is the function:
+ss1 <- function(x) {
+    sum((x - mean(x))^2)
+}
+ss1(x)
+```
+
+Alternative:
+
+```{r Challenge2-2, echo=TRUE}
+ss2 <- function(x) {
+    sum(x^2) - length(x) * mean(x)^2
+}
+ss2(x)
+```
+
+And another without having to use mean():
+
+```{r Challenge2-3, echo=TRUE}
+ss3 <- function(x) {
+    sum(x^2) - (sum(x))^2/length(x)
+}
+ss3(x)
+```
+
+Sum of squares gets bigger and bigger with more data points. To compare with different data sets then we need to look at the average deviation (i.e., how much each point diverges from the mean, on average) instead of the sum of squares. This is the **mean squared deviation** and is the definition of variance in a dataset. **Basically this is the average of the sum of squares.**
+
+**population variance** = sum of squares / n
+
+This works out to the following:
+
+```{r Challenge2-4, echo=TRUE}
+pop_v <- function(x) {
+    sum((x - mean(x))^2)/length(x)
+}
+pop_v(x)
+```
+
+**sample variance** removes bias to estimate the population variance = sum of squares / (n-1)
+
+Copied from the instructions to explain why it is n-1:
+In this formula, n - 1 is the number of degrees of freedom implied by the sample. The degrees of freedom is the number of values used to calculate a sample statistic that are free to vary. We used n observations to calculate the mean of our sample, and that implies n - 1 degrees of freedom. We use that statistic about our sample as an estimate of the population mean, which is used to derive an estimate of the population variance.
+
+### Challenge 3
+
+Write a function to calculate the variance for a vector of values representing a sample of measurements. Compare the results of your function to the built-in function, var(), which calculates sample variance.
+
+```{r Challenge3-1, echo=TRUE}
+sample_v <- function(x) {
+    sum((x - mean(x))^2)/(length(x) - 1) #added the degree of freedom
+}
+sample_v(x)
+```
+
+number is now larger than before just to note
+
+trying the var() function - not looking at documentation just going to send it this first time
+
+```{r Challenge3-2, echo=TRUE}
+var(x)
+```
+
+Ok got the same answer!
+
+How does Sample Variance compare to Population Variance? What happens to the sample variance as sample size increases?
+
+```{r Challenge3-3, echo=TRUE}
+y <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 25, 50, 100, 200, 300, 400, 1000)
+var(y)
+```
+
+It gets smaller
+
+Testing population variance with y vector (more elements)
+
+```{r Challenge3-3, echo=TRUE}
+pop_v(y)
+sum((y - mean(y))^2)/length(y)
+```
+
+It is also smaller than x but it's also smaller than sample variance (just like it was with the x vector)
+
+For a random variable, how is variance related to sample size? Let’s explore this…
+
+[1] plot:
+
+```{r Challenge3-4, echo=TRUE}
+plot(c(0, 50), c(0, 15), type= "n", xlab = "Sample Size", ylab = "Variance")
+```
+
+[2] Create a random variable drawn from a normal distribution using the rnorm() function. Let’s use for loops to do this for samples of size 5, 10, 15… up to 50, with 50 replicates at each size. The structure for for loops is…
+
+for (counter in vector){code to run}
+
+```{r Challenge3-4, echo=TRUE}
+plot(c(0, 50), c(0, 15), type= "n", xlab = "Sample Size", ylab = "Variance")
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... for (n in seq(5, 50,
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 5)) # samples of 5, 10,
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 15...
+{
+    for (i in 1:50) # 50 replicates for (i in 1:50) # 50 replicates
+    {
+        x <- rnorm(n, mean = 10, sd = 2)
+        points(n, var(x))
+    }
+}
+```
+
+**Standard Deviation** is simply the square root of the variance (taking the sum of squares to the population variance by averaging it and now square rooting it)
+
+```{r Challenge3-5, echo=TRUE}
+pop_sd <- function(x) {
+    sqrt(pop_v(x))
+}
+pop_sd(x)
+```
+
+Alternatively with sample variance:
+
+```{r Challenge3-6, echo=TRUE}
+sample_sd <- function(x) {
+    sqrt(sample_v(x))
+}
+sample_sd(x)
+```
+
+My answers are off from the instructions but I cannot identify where the issue is. Will have to revisit.
+
