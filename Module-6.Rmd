@@ -277,6 +277,7 @@ Spend some time exploring the data and then make boxplots of log(female body mas
 ```{r Challenge5-1, echo=TRUE}
 f1 <- "~/Documents/BU/AN_588/AN588-Modules-nmer/KamilarAndCooperData.csv"
 k <- read.csv(f1, header = TRUE, sep = ",", stringsAsFactor = FALSE)
+head(k)
 summary(k)
 attach(k)
 ```
@@ -364,3 +365,126 @@ p1
 ```
 
 ### Challenge 7
+
+Make my own scatterplot!
+
+This one is average species brain size by max longevity visualized by family
+
+```{r Challenge7-1, echo=TRUE}
+p2 <- ggplot(data = k, aes(x = log(Brain_Size_Species_Mean), y = log(MaxLongevity_m), color = factor(Family)))
+p2 <- p2 + xlab("log(Brain Size Species Mean)") + ylab("log(MaxLongevity)")
+p2 <- p2 + geom_point()
+p2 <- p2 + theme(legend.position = "bottom", legend.title = element_blank())
+p2
+```
+
+This one just adds a trend line. I could not get both color and trend line to display together without the trend line getting weird.
+
+```{r Challenge7-2, echo=TRUE}
+p2 <- ggplot(data = k, aes(x = log(Brain_Size_Species_Mean), y = log(MaxLongevity_m)))
+p2 <- p2 + xlab("log(Brain Size Species Mean)") + ylab("log(MaxLongevity)")
+p2 <- p2 + geom_point()
+p2 <- p2 + geom_smooth(method = "lm")
+p2
+```
+
+## Aggregate Statistics and the {dplyr} Package
+
+To calculate summary statistics for groups of observations in a data frame, there are many different approaches.
+
+Can use aggregate() but it is more clunky
+
+```{r Aggregate-1, echo=TRUE}
+aggregate(k$Body_mass_female_mean ~ k$Family, FUN = "mean", na.rm = TRUE)
+```
+
+So this gives us two columns and the mean of the numerical observations in those columns. It's a little confusing in this one because it's the mean of a column that is the mean but each observation is much more granular so it is averaging up each data point that belongs to atelidae, etc.
+
+Another way of doing this with bracket notation:
+
+```{r Aggregate-2, echo=TRUE}
+aggregate(x = k["Body_mass_female_mean"], by = k["Family"], FUN = "mean", na.rm = TRUE)
+```
+
+Or we can use dplyr functions
+
+filter() requires entering the data, and the columns you are subsetting under what parameters with operators such as ==, > or <
+
+```{r Aggregate-3, echo=TRUE}
+s <- filter(k, Family == "Hominidae" & Mass_Dimorphism > 2)
+head(s)
+```
+
+arrange() orders the rows of the data frame by the values of selected columns. 
+
+So first we have all of Atelidae arranged then genus Alouatta then body mass increasing; then it would go to the next. (I think this is how it works based on the documentation but I am a little unclear).
+
+```{r Aggregate-4, echo=TRUE}
+s <- arrange(k, Family, Genus, Body_mass_male_mean)
+s
+```
+
+select() just lets you see those columns
+
+```{r Aggregate-5, echo=TRUE}
+s <- select(k, Family, Genus, Body_mass_male_mean)  # selecting specific columns...
+head(s)
+```
+
+rename() lets you rename columns
+
+```{r Aggregate-6, echo=TRUE}
+s <- rename(k, Female_Mass = Body_mass_female_mean)
+head(s$Female_Mass)
+```
+
+mutate() adds new variables that are functions of old variables
+
+This one is turning genus and species (first turned into character vectors separated by spaces) into a column called binomial. It is reading across the data frame).
+
+```{r Aggregate-7, echo=TRUE}
+s <- mutate(k, Binomial = paste(Genus, Species, sep = " "))
+head(s$Binomial)
+```
+
+summarise() is a simpler aggregate()
+
+This is taking data frame k, and under the column name avgF giving the mean of all of the column body mass female mean, excluding NA values, then doing the same for males (under a column avgM).
+```{r Aggregate-8, echo=TRUE}
+s <- summarise(k, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean, na.rm = TRUE))
+s
+```
+
+group_by() allows a data frame to be grouped by a column value
+
+```{r Aggregate-9, echo=TRUE}
+byFamily <- group_by(k, Family)
+byFamily
+```
+
+Then we can summarise the grouped variable
+
+```{r Aggregate-10, echo=TRUE}
+s <- summarise(byFamily, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
+    na.rm = TRUE))
+s
+```
+
+So now this looks a lot like a cleaner version of aggregate()
+
+## Piping
+
+%>% is an operator that moves operations together. Whatever comes after is implemented before. It saves lines of code and produces more complicated outputs. Basically whatever is directly before the pipe, is the first argument in the function that immediately comes after the pipe.
+
+This is the last few lines of code as one line using pipes:
+
+```{r Piping-1, echo=TRUE}
+s <-                                                             #to create dataframe "s"
+  k %>%                                                          #take dataframe "k"
+  group_by(Family) %>%                                           #Group it by Family (usually this would be group_by(k, Family))
+  summarise(avgF = mean(Body_mass_female_mean, na.rm=TRUE),      #And calculate mean male BM
+            avgM = mean(Body_mass_male_mean, na.rm=TRUE))        #And mean female BM (and usually this would be summarise(byFamily, etc))
+s
+```
+
+And voila we get the same thing!
