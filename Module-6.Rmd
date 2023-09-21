@@ -235,6 +235,8 @@ abline(v = mean(log(area), na.rm = TRUE), col = "hotpink")
 #### Density Plot
 The density() function computes a non-parametric estimate of the distribution of a variable, which can be combined with plot() to also yield a graphical view of the distribution of the data. If your data have missing values, then you need to add the argument na.rm=TRUE to the density() function. To superimpose a density() curve on a histogram, you can use the lines(density()) function.
 
+It kind of smooths out the histogram
+
 ```{r Challenge3-4, echo=TRUE}
 par(mfrow = c(1, 1))  # set up one panel and redraw the log(population) histogram
 hist(log(population), freq = FALSE, col = "lemonchiffon", main = "My Plot with Mean and Density",
@@ -332,14 +334,18 @@ detach(k)
 
 Did this to show the difference between no log and with log. With log is like zooming in and getting a better view of the data.
 
+The former would be really good for showing the exceptionalism of apes (and capuchins) but the latter would be better at looking at everyone.
+
 #### ggplot2
 
 Following similar steps from the boxplot- will do a scatterplot with the same data as above
 1. defining the variables and data and color coding the plot points by Family column
 2. modify the axis labels (this was step 4 before)
 3. make the scatterplot (step 2 before)
-4. modify the legend at the bottom (kind of equivalent to step 3 before)
+4. modify the legend at the bottom (kind of equivalent to step 3 before) and legend title is blank
 4. run the graph
+
+Must turn the Family column into a factor!! This is important because otherwise it will fail; this one was just a character vector before
 
 ```{r Challenge6-2, echo=TRUE}
 p1 <- ggplot(data = k, aes(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean), color = factor(Family)))
@@ -357,7 +363,7 @@ p1 <- p1 + theme(legend.position = "none")
 p1
 ```
 
-And then add regression lines
+And then add regression lines. These could suggest different evolutionary relationships between brain size and body size
 
 ```{r Challenge6-4, echo=TRUE}
 p1 <- p1 + geom_smooth(method = "lm", fullrange = TRUE)
@@ -502,20 +508,21 @@ And calculate the average value for female body mass, male body mass, and mass d
 s <- k %>% mutate(Binomial = paste(Genus, Species, sep = " ")) %>% select(Binomial, Family, Body_mass_female_mean, Body_mass_male_mean, Mass_Dimorphism) %>% group_by(Binomial) %>% summarise(avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
     na.rm = TRUE), avgD = mean(Mass_Dimorphism, na.rm = TRUE))
 s
+## s %>% filter(Binomial == "Chlorocebus pygerythrus" | "Lagothrix lagotricha")
 ```
 
 Acccording to Kamilar & Cooper’s (2013) dataset, what is the average male and female size, and body mass dimorphism of my two main study species (vervet monkeys, Chlorocebus pygerythrus; and woolly monkeys, Lagothrix lagotricha)? 
 
-Chlorocebus pygerythrus: Female: 3575.8	Male: 5071.2	Dimorphism: 1.418
-Lagothrix lagotricha: Female: 7020.0	Male: 7280.0	Dimorphism: 1.037	
+**Chlorocebus pygerythrus: Female: 3575.8	Male: 5071.2	Dimorphism: 1.418**
+**Lagothrix lagotricha: Female: 7020.0	Male: 7280.0	Dimorphism: 1.037**
 
 Which has a larger average female body mass? 
 
-Lagothrix lagotricha
+**Lagothrix lagotricha**
 
 Which is more sexually dimorphic?
 
-Chlorocebus pygerythrus
+**Chlorocebus pygerythrus**
 
 Compare the body size of my two main study taxa at the Family level (i.e., Cercopithecidae vs. Atelidae) by plotting (using {ggplot2}) the body mass of males and females and sexual dimorphism. If you can, make the Cercopithecid boxes green, and the Atelid boxes purple.
 
@@ -537,3 +544,28 @@ p4
 ```
 
 This is where I found how to change the colors: http://www.sthda.com/english/wiki/ggplot2-colors-how-to-change-colors-automatically-and-manually#:~:text=%2C%20c%20%3D%20100.-,Change%20colors%20manually,()%20for%20lines%20and%20points
+
+
+```{r Challenge8-3, echo=TRUE}
+## From class 9/21/2023 another go
+byFamilyCA <- filter(k, Family == "Cercopithecidae" | Family == "Atelidae")
+byFamilyCA
+p3 <- ggplot(data = byFamilyCA, aes(x = Mass_Dimorphism, y = Family, color = factor(Family)))
+p3 <- p3 + xlab("Mass Dimorphism") + ylab("Family")
+p3 <- p3 + geom_boxplot()
+p3 <- p3 + theme(legend.position = "bottom", legend.title = element_blank())
+p3 <- p3 + scale_color_manual(breaks = c("Atelidae", "Cercopithecidae"), values = c("purple", "green"))
+p3
+p4 <- ggplot(data = byFamilyCA, aes(x = Body_mass_male_mean, y = Family, color = factor(Family)))
+p4 <- p4 + xlab("Body Mass Male Mean") + ylab("Family")
+p4 <- p4 + geom_boxplot()
+p4 <- p4 + theme(legend.position = "bottom", legend.title = element_blank())
+p4 <- p4 + scale_color_manual(breaks = c("Atelidae", "Cercopithecidae"), values = c("purple", "green"))
+p4
+p5 <- ggplot(data = byFamilyCA, aes(x = Body_mass_female_mean, y = Family, color = factor(Family)))
+p5 <- p5 + xlab("Body Mass Female Mean") + ylab("Family")
+p5 <- p5 + geom_boxplot()
+p5 <- p5 + theme(legend.position = "bottom", legend.title = element_blank())
+p5 <- p5 + scale_color_manual(breaks = c("Atelidae", "Cercopithecidae"), values = c("purple", "green"))
+p5
+```
