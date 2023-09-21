@@ -32,6 +32,10 @@ Measures of Central Tendency
 **Harmonic mean** = the reciprocal of the average of the reciprocals of a set of values.
 **Geometric mean** = a measure of central tendency for processes that are multiplicative rather than additive = the nth root of the product of the values (for the mathematically inclindes, it also = the antilog of the averaged log values).
 
+If you take the averge mph taken during your trip additively then you will get the wrong answer because you might have driven different distances for each leg. Harmonic mean would correct that.
+
+when to use these things- depends on the nature of your data. You need to look at it. Reciprocals, fractions, rates = harmonic mean. Values are multiplicative (exponential growth of bacteria) that would be geometric mean. 
+
 ### Challenge 1 Measures of Central Tendency
 
 write a function to determine the geometric mean of the values in a vector.
@@ -96,6 +100,8 @@ gm1(x)
 ```
 This gives a different answer than before because the length of the vector is longer but I was able to remove the NA value in the prod function.
 
+**Measures of central tendency are interesting but not enoguh to compare. Doesn't give us enough information about the distribution of the data around that central tendency. That's why we need measures of spread**
+
 ### Challenge 2 Measures of Spread
 
 Copying from the instructions for reference:
@@ -155,6 +161,7 @@ pop_v(x)
 ```
 
 **sample variance** removes bias to estimate the population variance = sum of squares / (n-1)
+This is an estimator! It is speaking for the whole entire population form a small sample you are measuring. It is saying what you might expect for everyone.
 
 Copied from the instructions to explain why it is n-1:
 In this formula, n - 1 is the number of degrees of freedom implied by the sample. The degrees of freedom is the number of values used to calculate a sample statistic that are free to vary. We used n observations to calculate the mean of our sample, and that implies n - 1 degrees of freedom. We use that statistic about our sample as an estimate of the population mean, which is used to derive an estimate of the population variance.
@@ -180,7 +187,7 @@ var(x)
 
 Ok got the same answer!
 
-How does Sample Variance compare to Population Variance? What happens to the sample variance as sample size increases?
+**How does Sample Variance compare to Population Variance?** What happens to the sample variance as sample size increases?
 
 ```{r Challenge3-3, echo=TRUE}
 y <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 25, 50, 100, 200, 300, 400, 1000)
@@ -215,6 +222,7 @@ for (n in seq(5, 50, 5))
     }
 }
 ```
+Sample vairance gets tighter as sample size gets bigger. There is more certainty!!! Less variance.
 
 **Standard Deviation** is simply the square root of the variance (taking the sum of squares to the population variance by averaging it and now square rooting it)
 
