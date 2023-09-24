@@ -1,0 +1,142 @@
+---
+title: "Module-8"
+author: "Nicole Merullo"
+date: "2023-09-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(manipulate)
+```
+
+## Probability
+The term probability is applied to population level variables that describe the magnitude of chance associated with particular observations or event. Probabilities summarize the relative frequencies of possible outcomes. Probabilities are properties of distributions. Probabilities vary between zero and one. Outcomes that are impossible have Pr = 0, those that are certain have Pr = 1.
+
+Example: if we roll a (fair) die, there are 6 possible outcomes, each has a probability of occurring of 1 in 6. This is referred to as a frequentist or classical way of thinking about the probability of different outcomes… the relative frequency with which an event occurs over numerous identical, objective trials.
+
+Example: Rolling a Die
+We will use the {manipulate} package and the sample() function to explore the effects of sample size on estimates of the probability of different outcomes. The probability of each outcome (rolling a “1”, “2”,…, “6”) is 1 in 6, but our estimate of the probability of each possible outcome will change with sample size.
+
+```{r Probability-1, echo=TRUE}
+outcomes <- c(1, 2, 3, 4, 5, 6) #facets on a die
+manipulate(hist(sample(outcomes, n, replace = TRUE), breaks = c(0.5, 1.5, 2.5,
+    3.5, 4.5, 5.5, 6.5), probability = TRUE, main = paste("Histogram of Outcomes of ",
+    n, " Die Rolls", sep = ""), xlab = "roll", ylab = "probability"), n = slider(0,
+    10000, initial = 100, step = 100)) 
+```
+
+sample() takes a sample of the data (first argument, in this case the vector 'outcomes') and samples it n number of times with or without replacement (putting back or not the elements)
+hist() is building the histogram with the data being the sample() results, breaks being defined as between the vector elements, freq not defined but probability is so not defaulting to TRUE. 
+
+Everytime we run the code it changes becausw it is simulating 100 die rolls each time
+
+## Challenge 1: Dice Rolling
+
+Write a function to simulate rolling a die where you pass the number of rolls as an argument. Then, use your function to simulate rolling two dice 1000 times and take the sum of the rolls. Plot a histogram of those results.
+
+```{r Challenge1-1, echo=TRUE}
+roll <- function(x){
+  sample(1:6, x, replace=TRUE)
+}
+nrolls <- 1000
+hist(roll(nrolls), breaks = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5), probability = TRUE, main = "Probability of 1000 Dice Rolls", xlab = "roll", ylab = "probability") 
+twodice <- roll(nrolls) + roll(nrolls)
+hist(twodice, breaks = c(1.5:12.5), probability = TRUE, main = "Probability of 2 Dice", xlab = "roll", ylab = "probability")
+```
+
+## Rules of Probability
+1. **Pr (+)**= Probability that something occurs = 1
+
+2. **Pr (∅)** = Probability that nothing occurs = 0
+
+3. **Pr (A)** = Probability that a particular event A occurs (prob of A happening)
+
+0 ≤ Pr (A) ≤ 1 = Probability of A happening is between 0 and 1
+
+4. **Pr (A ⋃ B)** = Probability that a particular event A or a particular event B occurs = UNION (probability of A OR B happening)
+
+Pr (A ⋃ B) = Pr (A) + Pr (B) - Pr (A ⋂ B) (Prob of A plus Prob of B minus Prob of A AND B)
+
+If event A and B are mutually exclusive, then this simplifies to Pr (A) + Pr (B)
+
+5. **Pr (A ⋂ B)** = Probability that both A and B occur simultaneously = INTERSECTION (Probability of A AND B happening)
+
+Pr (A ⋂ B) = Pr (A | B) × Pr (B) = Pr (B | A) × Pr (A) 
+
+where the pipe operator ( | ) can be read as “given”. (dependent on)
+
+If the 2 events are independent (i.e., if the probability of one does not depend on the probability of the other), then Pr (A ⋂ B) simplifies to…
+
+Pr (A) × Pr (B)
+
+If Pr (A ⋂ B) = 0, then we say the events are mutually exclusive (e.g., you cannot have a die roll be 1 and 2)
+
+6. **Pr (Ā)** = Probability of the complement of A (i.e., not A) = 1 - Pr (A) (everything BUT the probability of A)
+
+7. Conditional Probability is the probability of an event occuring after taking into account the occurrence of another event, i.e., one event is conditioned on the occurrence of a different event.
+
+For example, the probability of a die coming up as a “1” given that we know the die came up as an odd number (“1”, “3”, or “5”).
+
+**Pr (A | B) = Pr (A ⋂ B) ÷ Pr (B)**
+
+If event A and event B are independent, then Pr (A | B) = [ Pr (A) × Pr (B) ] ÷ Pr (B) = Pr (A)
+
+If event A and B are dependent, then Pr (A | B) ≠ Pr (A)
+
+## Challenge 2: Deck of Cards
+
+You have a deck of 52 cards, Ace to 10 + 3 face cards in each suit. You draw a card at random.
+
+What is the probability that you draw a face card?
+```{r Challenge2-1, echo=TRUE}
+PrA <- 12/52
+PrA
+```
+
+What is the probability that you draw a King?
+```{r Challenge2-2, echo=TRUE}
+PrA <- 4/52
+PrA
+```
+
+What is the probability that you draw a spade?
+```{r Challenge2-3, echo=TRUE}
+PrA <- 1/4
+PrA
+```
+
+What is the probability that you draw a spade given that you draw a face card? 
+
+Pr (A | B) = Pr (A ⋂ B) ÷ Pr (B) or [ Pr (A) × Pr (B) ] ÷ Pr (B) = Pr (A). Since drawing a spade is independent from drawing a face card I will use this to show thatt Pr of A given B is the same as Pr(A)
+```{r Challenge2-4, echo=TRUE}
+PrB <- 12/52
+PrB
+PrA <- 1/4
+PrA
+PrAgB <- (PrA*PrB)/PrB
+PrAgB
+```
+
+What is the probability that you draw a King given that you draw a face card?
+Pr (A | B) = Pr (A ⋂ B) ÷ Pr (B) because these are dependent on each other it will not be equal to Pr(A)
+```{r Challenge2-5, echo=TRUE}
+PrB <- 12/52
+PrB
+PrA <- 4/12
+PrA
+PrAgB <- (PrA*PrB)
+PrAgB
+```
+What is the probability that you draw a card that is both from a red suit (hearts or diamonds) and a face card?
+Pr(A n B)
+```{r Challenge2-6, echo=TRUE}
+PrB <- 12/52
+PrB
+PrA <- 4/12
+PrA
+PrAgB <- (PrA*PrB)
+PrAgB
+```
+What is the probability that you draw a card that is either a club or not a face card?
+
+
