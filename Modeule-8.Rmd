@@ -281,3 +281,192 @@ pbeta(0.7, 2, 1)
 qbeta(0.49, 2, 1)
 #each one of these will return the first one of the other
 ```
+
+### Expected Mean and Variance of Random Variables
+
+The mean value (or expectation) and the expected variance for a random variable with a given probability mass function can be expressed generally as follows:
+
+μX = Expectation for X = ∑ xi × Pr (X=xi) for all x from xi to xk
+
+σ2X = Variance of X = ∑ (xi−μX)2 × Pr (X=xi) for all x from xi to xk
+
+Applying these formulae to die rolls, we could calculate the expectation for X for a large set of die rolls…
+
+(1 * 1/6) + (2 * 1/6) + … + (6 * 1/6) = 3.5
+
+this is a little more than half interestingly
+
+Expectation:
+```{r RandomVars-10, echo=TRUE}
+m <- sum(seq(1:6)*1/6) #sequence of 1:6 each multiplied by 1/6 added up
+m
+```
+
+and expected variance:
+```{r RandomVars-11, echo=TRUE}
+var <- sum((seq(1:6) - mean(seq(1:6)))^2 * (1/6))
+var
+```
+
+## Useful Probability Distributions for Random Variables
+
+The **Bernoulli Distribution** is the probability distribution of a binary random variable, i.e., a variable that has only two possible outcomes, such as success or failure, heads or tails, true or false. If p is the probability of one outcome, then 1−p has to be the probabilty of the alternative. For flipping a fair coin, for example, p = 0.5 and 1−p also = 0.5.
+
+For the BERNOULLI DISTRIBUTION, the probability mass function is:
+f(x) = p^x*(1−p)^1−x where x = {0 or 1}
+For this distribution, μX = p and σ2X = p(1−p)
+
+## Challenge 3: Bernoulli
+
+Using the Bernoulli distribution, calculate the expectation for drawing a spade from a deck of cards? What is the variance in this expectation across a large number of draws?
+
+```{r Challenge3-1, echo=TRUE}
+PrA <- ((13/52)^1)*(39/52)^0
+PrA
+varPrA <- (13/52)*(1-(13/52)) #PrA * the complement of probability A
+varPrA
+```
+
+The Bernoulli distribution is a special case of the Binomial Distribution. The binomial distribution is typically used to model the probability of a number of “successes” k out of a set of “trials” n, i.e., for counts of a particular outcome.
+
+Again, the probability of success on each trial = p and the probability of not success = 1−p.
+
+**See rule 6 of probability rules**
+
+See Module 8 instruactions for formulae for binomal distribution (n choose k stuff)
+
+## Challenge 4: Binomial Distribution
+
+What is the chance of getting a “1” on each of six consecutive rolls of a die?
+
+```{r Challenge4-1, echo=TRUE}
+n <- 6  # number of trials
+k <- 6  # number of successes
+p <- 1/6
+prob <- (factorial(n)/(factorial(k) * factorial(n - k))) * (p^k) * (1 - p)^(n - k) 
+# (6!(trials)/6!(succ) * 6-6!) * 6^6 * (1-1/6)^(6-6)
+prob
+```
+
+What about of getting exactly three “1”s? On 6 rolls
+
+```{r Challenge4-2, echo=TRUE}
+n <- 6  # number of trials
+k <- 3  # number of successes
+p <- 1/6
+prob <- (factorial(n)/(factorial(k) * factorial(n - k))) * (p^k) * (1 - p)^(n - k) 
+# (6!(trials)/6!(succ) * 6-6!) * 6^6 * (1-1/6)^(6-6)
+prob
+```
+
+Can also use built in function in r
+
+```{r Challenge4-3, echo=TRUE}
+dbinom(x = k, size = n, prob = p)
+```
+ 
+ and can use pbinom() to see the probability of observing up to and including a given number of successes in n
+ trials
+ 
+ This is how many times you could see 0 to 6 "1's" after rolling a die 6 times. 
+ 
+```{r Challenge4-4, echo=TRUE}
+probset <- dbinom(x = 0:6, size = 6, prob = 1/6)  # x is number of successes, size is number of trials
+barplot(probset, names.arg = 0:6, space = 0, xlab = "outcome", ylab = "Pr(X = outcome)",
+    main = "Probability Mass Function")
+cumprob = cumsum(probset)
+barplot(cumprob, names.arg = 0:6, space = 0.1, xlab = "outcome", ylab = "Cumulative Pr(X)",
+    main = "Cumulative Probability")
+sum(probset)
+```
+
+the chance of getting exactly 3 "1s" (dbinom) is different from getting up to and including 3 "1s"(qbinom)
+
+```{r Challenge4-5, echo=TRUE}
+dbinom(x = 3, size = 6, prob = 1/6)
+pbinom(q = 3, size = 6, prob = 1/6)
+sum(dbinom(x = 0:3, size = 6, prob = 1/6)) #same as pbinom
+```
+
+and the chance of getting more than 3 "1s" in 6 rolls would be expressed with the negative binomial distribution pnbinom
+
+```{r Challenge4-5, echo=TRUE}
+1 - pnbinom(q = 3, size = 6, prob = 1/6)
+pnbinom(q = 3, size = 6, prob = 1/6, lower.tail = FALSE)
+```
+
+and once again this is different from *3 or more* rolls
+
+```{r Challenge4-6, echo=TRUE}
+1 - pbinom(q = 2, size = 6, prob = 1/6)
+pbinom(q = 2, size = 6, prob = 1/6, lower.tail = FALSE)
+```
+
+
+What is the expected number of “1”s to occur in six consecutive rolls?
+
+Cannot figure this out or what is needed to figure this out
+
+### Poisson Distribution
+
+The Poisson Distribution is often used to model open ended counts of independently occurring events, for example the number of cars that pass a traffic intersection over a given interval of time or the number of times a monkey scratches itself during a given observation interval. The probability mass function for the Poisson distribution is described by a single parameter, λ, where λ can be interpreted as the mean number of occurrences of the event in the given interval.
+
+See module directions for formula
+
+Note that the mean and the variance are the same!
+
+```{r Poisson-1, echo=TRUE}
+x <- 0:10
+l = 3.5
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = "Probability Mass Function")
+x <- 0:20
+l = 10
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = "Probability Mass Function")
+x <- 0:50
+l = 20
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = "Probability Mass Function")
+```
+As we did for other distributions, we can also use the built in probability function for the Poisson distribution, ppois(), to return the value of the cumulative distribution function, i.e., the probability of observing up to and including a specific number of events in the given interval
+
+```{r Poisson-2, echo=TRUE}
+x <- 0:10
+l <- 3.5
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x",
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+x <- 0:20
+l <- 10
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x",
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+x <- 0:50
+l <- 20
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x",
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+```
+
+Every Saturday, at the same time, a primatologist goes and sits in the forest in the morning and listens for titi monkey calls, counting the number of calls they hear in a 2 hour window from 5am to 7am. Based on previous knowledge, she believes that the mean number calls she will hear in that time is exactly 15. Let X represent the appropriate Poisson random variable of the number of calls heard in each monitoring session.
+
+What is the probability that she will hear more than 8 calls during any given session?
+What is the probability that she will hear no calls in a session?
+What is the probability that she will hear exactly 3 calls in a session?
+Plot the relevant Poisson mass function over the values in range 0 ≤ x ≤ 30.
+Simulate 104 results from this distribution (i.e., 2 years of Saturday monitoring sessions).
+Plot the simulated results using hist() and use xlim() to set the horizontal limits to be from 0 to 30. How does your histogram compare to the shape of the probability mass function you plotted above?
+
+```{r Poisson-2, echo=TRUE}
+l1 <- 15^8
+e <- exp(-8)
+f <- factorial(8)
+(l1*e)/f
+Peight <- ((15^8)*exp(-8))/factorial(8)
+Peight
+#why does this return a number larger than 1?
+l <- 15
+x <- 0:30
+calls <- dpois(x = x, lambda = l)
+barplot(calls, names.arg = x, space = 0, xlab = "Titi Calls", ylab = "Probability of # of Calls", main = "Probability Mass Function of Titi Calls")
+mornings <- 104
+mornings * l #for each session 
+```
