@@ -457,16 +457,26 @@ Plot the simulated results using hist() and use xlim() to set the horizontal lim
 
 ```{r Poisson-2, echo=TRUE}
 l1 <- 15^8
-e <- exp(-8)
+e <- exp(-l)
 f <- factorial(8)
 (l1*e)/f
-Peight <- ((15^8)*exp(-8))/factorial(8)
+Peight <- ((15^8)*exp(-l))/factorial(8)
 Peight
-#why does this return a number larger than 1?
+#this is for exactly 8 but need to know more than 8
+ppois(8, l, lower.tail = FALSE) # This is more than 8
+#exactly 0 calls in a session
+PZero <- ((15^0)*exp(-15))/factorial(0)
+PZero #really small approaching zero
+#exactly 3 calls in a session
+PThree <- ((15^3)*exp(-15))/factorial(3)
+PThree
 l <- 15
 x <- 0:30
 calls <- dpois(x = x, lambda = l)
 barplot(calls, names.arg = x, space = 0, xlab = "Titi Calls", ylab = "Probability of # of Calls", main = "Probability Mass Function of Titi Calls")
 mornings <- 104
-mornings * l #for each session 
+years <- rpois(mornings, l)
+years
+hist(years, breaks = c(0.5:30.5), probability = TRUE, main = "Probability of Titi Calls in 2 years", xlab = "Calls", ylab = "probability", xlim = range(0:30))
+#The histogram peaks close to the average (lambda value) at 15 and has right skew like the pmf
 ```
