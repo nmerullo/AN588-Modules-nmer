@@ -407,7 +407,7 @@ What is the expected number of “1”s to occur in six consecutive rolls?
 
 Cannot figure this out or what is needed to figure this out
 
-### Poisson Distribution
+## Poisson Distribution
 
 The Poisson Distribution is often used to model open ended counts of independently occurring events, for example the number of cars that pass a traffic intersection over a given interval of time or the number of times a monkey scratches itself during a given observation interval. The probability mass function for the Poisson distribution is described by a single parameter, λ, where λ can be interpreted as the mean number of occurrences of the event in the given interval.
 
@@ -445,7 +445,7 @@ l <- 20
 barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x",
     ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
 ```
-
+### Homework 2
 Every Saturday, at the same time, a primatologist goes and sits in the forest in the morning and listens for titi monkey calls, counting the number of calls they hear in a 2 hour window from 5am to 7am. Based on previous knowledge, she believes that the mean number calls she will hear in that time is exactly 15. Let X represent the appropriate Poisson random variable of the number of calls heard in each monitoring session.
 
 What is the probability that she will hear more than 8 calls during any given session?
@@ -480,3 +480,26 @@ years
 hist(years, breaks = c(0.5:30.5), probability = TRUE, main = "Probability of Titi Calls in 2 years", xlab = "Calls", ylab = "probability", xlim = range(0:30))
 #The histogram peaks close to the average (lambda value) at 15 and has right skew like the pmf
 ```
+
+## Probability denisty functions
+recall these are for continuous variables
+
+### Uniform Distribution
+The Uniform Distribution is the simplest probability density function describing a continuous random variable. The probability is uniform and does not fluctuate across the range of x values in a given interval.
+
+## Challenge 5
+What would you predict the expectation (mean) should be for a uniform distribution?
+
+```{r Challenge 5-1, echo=TRUE}
+a <- 4
+b <- 8
+x <- seq(from = a - (b - a), to = b + (b - a), by = 0.01)
+fx <- dunif(x, min = a, max = b)  # dunif() evaluates the density at each x
+plot(x, fx, type = "l", xlab = "x", ylab = "f(x)", main = "Probability Density Function")
+plot(x, punif(q = x, min = a, max = b), type = "l", xlab = "x", ylab = "Pr(X ≤ x)",
+    main = "Cumulative Probability")  # punif() is the cumulative probability density up to a given x
+```
+**The mean (expectation) is the same across the whole range**
+
+In the PDF you can see that at 4-8 there is always a 25% probability
+In the cumulutive probability you can see that from 4 to 8 you go from 0% probability of X </= x to 100% probability of X </= x
