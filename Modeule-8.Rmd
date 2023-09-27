@@ -457,6 +457,7 @@ Plot the simulated results using hist() and use xlim() to set the horizontal lim
 
 ```{r Poisson-2, echo=TRUE}
 l1 <- 15^8
+l <- 15
 e <- exp(-l)
 f <- factorial(8)
 (l1*e)/f
@@ -470,7 +471,6 @@ PZero #really small approaching zero
 #exactly 3 calls in a session
 PThree <- ((15^3)*exp(-15))/factorial(3)
 PThree
-l <- 15
 x <- 0:30
 calls <- dpois(x = x, lambda = l)
 barplot(calls, names.arg = x, space = 0, xlab = "Titi Calls", ylab = "Probability of # of Calls", main = "Probability Mass Function of Titi Calls")
@@ -660,7 +660,7 @@ observed_q <- quantile(v, ppoints(v))
 
 Step 4: Plot these quantiles against one another
 
-```{r Challenge7-5, echo=TRUE}
+```{r Challenge7-6, echo=TRUE}
 plot(theoretical_q, observed_q, main = "Normal QQ plot random normal variables",
     xlab = "Theoretical Quantiles", ylab = "Sample Quantiles")
 ```
@@ -668,4 +668,29 @@ plot(theoretical_q, observed_q, main = "Normal QQ plot random normal variables",
 ## Challenge 8
 
 What happens if you simulate fewer observations in your vectors? Or if you simulate observations from a different distribution?
+Fewer observations:
+```{r Challenge8-1, echo=TRUE}
+mu = 3.5
+sigma = 4
+v <- rnorm(10, mean = mu, sd = sigma)
+mean(v)
+var(v)
+sd(v)
+hist(v, breaks = c(-20:20), probability= TRUE, main = "Normal Distribution of 10 Random Numbers", xlab = "v", ylab = "probability")
+qqnorm(v, main = "Normal QQ plot random normal variables")
+qqline(v, col = "gray")
+```
 
+With only 10 observations, it starts to fall of the normal distribution line (some are right on it, others are way off); it is not perfectly normally distributed depsite being pulled from a normal distribution
+
+```{r Challenge8-1, echo=TRUE}
+years <- rpois(mornings, l)
+qqnorm(years, main = "Normal QQ plot random normal variables")
+qqline(years, col = "gray")
+```
+
+The poisson distribution is not all the way on the line but it's not that far off.
+
+## The Standard Normal Distribution
+
+Any normal distribution with mean μ and standard deviation σ can be converted into what is called the standard normal distribution, where the mean is zero and the standard deviation is 1. This is done by subtracting the mean from all observations and dividing these differences by the standard deviation. The resultant values are referred to a Z scores, and they reflect the number of standard deviations an observation is from the mean.
