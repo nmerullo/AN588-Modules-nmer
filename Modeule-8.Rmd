@@ -494,6 +494,7 @@ What would you predict the expectation (mean) should be for a uniform distributi
 a <- 4
 b <- 8
 x <- seq(from = a - (b - a), to = b + (b - a), by = 0.01)
+length(x)
 fx <- dunif(x, min = a, max = b)  # dunif() evaluates the density at each x
 plot(x, fx, type = "l", xlab = "x", ylab = "f(x)", main = "Probability Density Function")
 plot(x, punif(q = x, min = a, max = b), type = "l", xlab = "x", ylab = "Pr(X ≤ x)",
@@ -503,3 +504,27 @@ plot(x, punif(q = x, min = a, max = b), type = "l", xlab = "x", ylab = "Pr(X ≤
 
 In the PDF you can see that at 4-8 there is always a 25% probability
 In the cumulutive probability you can see that from 4 to 8 you go from 0% probability of X </= x to 100% probability of X </= x
+
+## Challenge 6
+Simulate a sample of 10000 random numbers from a uniform distribution in the interval between a = 6 and b = 8. Calculate the mean and variance of this simulated sample and compare it to the expectation for these parameters.
+
+```{r Challenge 6-1, echo=TRUE}
+a <- 6
+b <- 8
+mean <- (a+b)/2
+mean
+variance <- ((b-a)^2)/12
+variance
+#expected how much each one should vary from the mean
+x <- seq(from = a - (b - a), to = b + (b - a), length.out = 10000)
+length(x)
+fx <- runif(10000, min = a, max = b)  #runif is random simulation
+length(fx)
+plot(x, fx, type = "l", xlab = "x", ylab = "f(x)", main = "Probability Density Function")
+```
+
+## Normal Distribution
+
+
+
+Mean = (a+b)/2 = 14/2 = 7
