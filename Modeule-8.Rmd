@@ -694,3 +694,92 @@ The poisson distribution is not all the way on the line but it's not that far of
 ## The Standard Normal Distribution
 
 Any normal distribution with mean μ and standard deviation σ can be converted into what is called the standard normal distribution, where the mean is zero and the standard deviation is 1. This is done by subtracting the mean from all observations and dividing these differences by the standard deviation. The resultant values are referred to a Z scores, and they reflect the number of standard deviations an observation is from the mean.
+
+```{r CStandNorm-1, echo=TRUE}
+x <- rnorm(10000, mean = 5, sd = 8)  # simulate from a normal distribution with mean 5 and SD 8
+hist(x)
+mean(x)
+sd(x)
+```
+
+```{r CStandNorm-2, echo=TRUE}
+z <- (x - mean(x))/sd(x)  # standardized!
+hist(z)
+mean(z) #basically just gets super close to zero
+sd(z)
+```
+
+## Sample Distributions versus Population Distributions
+
+It is important to recognize that, above, we were dealing with probability distributions of discrete and continuous random variables as they relate to populations. But, as we have talked about before, we almost never measure entire populations; instead, we measure samples from populations and we characterize our samples using various statistics. The theoretical probability distributions described above (and others) are models for how we connect observed sample data to populations, taking into account various assumptions, and this is what allows us to do many types of inferential statistics. The most fundamental assumption is that the observations we make are independent from one another and are identically distributed, an assumption often abbreviated as iid. Obvious cases of violation of this assumption are rife in the scientific literature, and we should always be cautious about making this assumption!
+
+The important thing for us to know is that we can get unbiased estimates of population level parameters on the basis of sample statistics.
+
+Let’s imagine a population of 1 million zombies whose age at zombification is characterized by a normal distribution with a mean of 25 years and a standard deviation of 5 years. Below, we set up our population
+
+```{r SampleDist-1, echo=TRUE}
+set.seed(1)
+x <- rnorm(1e+06, 25, 5)
+hist(x, probability = TRUE)
+mu <- mean(x)
+mu
+sigma <- sqrt(sum((x - mean(x))^2)/length(x))
+sigma
+sd(x) #this is not correct bc it would divide by length(x)-1 and we do not want that. They are very close numbers but not the same
+```
+
+Suppose we now sample the zombie population by trapping sets of zombies and determining the mean age in each set. We sample without replacement from the original population for each set. Let’s do that 100 times with samples of size 5 and store these in a list.
+
+```{r SampleDist-2, echo=TRUE}
+k <- 1000  # number of samples
+n <- 5  # size of each sample
+s <- NULL  # dummy variable to hold each sample
+for (i in 1:k) {
+    s[[i]] <- sample(x, size = n, replace = FALSE)
+}
+head(s)
+```
+
+For each of these samples, we can then calculate a mean age, which is a statistic describing each sample. That statistic itself is a random variable with a mean and distribution. This is the sampling distribution. How does the sampling distribution compare to the population distribution? The mean of the two is pretty close to the same! The sample mean - which is an average of the set of sample averages - is an unbiased estimator for the population mean.
+
+```{r SampleDist-3, echo=TRUE}
+m <- NULL
+for (i in 1:k) {
+    m[i] <- mean(s[[i]])
+}
+mean(m)
+```
+
+This is very close to the original mean we calculated!
+
+## The Standard Error
+
+The variance in the sampling distribution, i.e., of all possible means of samples of size n from a population, is σ2/n. The square root of this variance is the standard deviation of the sampling distribution, also referred to as the standard error.
+
+Thus, if the population variance σ2 (and thus the population standard deviation σ) is known, then the standard error can be calculated as square root of (σ2/n) or, equivalently, σ / (square root of the sample size).
+
+```{r SE-1, echo=TRUE}
+pop_se <- sqrt(sigma^2/n)
+pop_se  # SE estimated from population standard deviation
+pop_se <- sigma/sqrt(n)
+pop_se  # SE estimated from population standard deviation
+```
+
+If the true population standard deviation is not known, the standard error can still be estimated from the standard deviation of any given sample. Thus, analogous to the formula we used when the true population standard deviation was known, the standard error calculated from a sample is simply the sample standard deviation / (square root of the sample size), or…
+
+```{r SE-2, echo=TRUE}
+stdev <- NULL
+for (i in 1:k) {
+    stdev[i] <- sd(s[[i]])
+}
+sem <- stdev/sqrt(n)  # a vector of SEs estimated from each sample 
+head(sem)
+mean(sem)
+pop_se
+```
+
+Thus, the standard error of the mean calculated from an individual sample can be used as an estimator for the standard deviation of the sampling distribution. This is extremely useful, since it means that, if our sample is large enough, we don’t have to repeatedly sample from the population to get an estimate of the sampling distribution directly using our data.
+
+Note that as our sample size increases, the standard error of the mean should decrease, as should the standard deviation in estimates of the population mean drawn from successive samples. This should be apparent intuitively… as each sample drawn from a population gets larger, the estimate of the mean value of those samples should vary less and less.
+
+Despite their similarities, the standard error of the mean calculated for a given sample and the standard deviation of that given sample tell us different things. The standard error of the mean is an estimate of how far a given sample mean is likely to be from the population mean; it is a measure of uncertainty. The standard deviation of a sample is a measure of the degree to which individuals values within a sample differ from the sample mean.
