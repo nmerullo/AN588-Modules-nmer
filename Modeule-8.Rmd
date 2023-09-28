@@ -390,14 +390,14 @@ sum(dbinom(x = 0:3, size = 6, prob = 1/6)) #same as pbinom
 
 and the chance of getting more than 3 "1s" in 6 rolls would be expressed with the negative binomial distribution pnbinom
 
-```{r Challenge4-5, echo=TRUE}
+```{r Challenge4-6, echo=TRUE}
 1 - pnbinom(q = 3, size = 6, prob = 1/6)
 pnbinom(q = 3, size = 6, prob = 1/6, lower.tail = FALSE)
 ```
 
 and once again this is different from *3 or more* rolls
 
-```{r Challenge4-6, echo=TRUE}
+```{r Challenge4-7, echo=TRUE}
 1 - pbinom(q = 2, size = 6, prob = 1/6)
 pbinom(q = 2, size = 6, prob = 1/6, lower.tail = FALSE)
 ```
@@ -683,7 +683,7 @@ qqline(v, col = "gray")
 
 With only 10 observations, it starts to fall of the normal distribution line (some are right on it, others are way off); it is not perfectly normally distributed depsite being pulled from a normal distribution
 
-```{r Challenge8-1, echo=TRUE}
+```{r Challenge8-2, echo=TRUE}
 years <- rpois(mornings, l)
 qqnorm(years, main = "Normal QQ plot random normal variables")
 qqline(years, col = "gray")
