@@ -455,7 +455,7 @@ Plot the relevant Poisson mass function over the values in range 0 ≤ x ≤ 30.
 Simulate 104 results from this distribution (i.e., 2 years of Saturday monitoring sessions).
 Plot the simulated results using hist() and use xlim() to set the horizontal limits to be from 0 to 30. How does your histogram compare to the shape of the probability mass function you plotted above?
 
-```{r Poisson-2, echo=TRUE}
+```{r Poisson-3, echo=TRUE}
 l1 <- 15^8
 l <- 15
 e <- exp(-l)
