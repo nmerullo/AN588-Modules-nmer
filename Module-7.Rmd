@@ -213,7 +213,7 @@ For a random variable, how is variance related to sample size? Let’s explore t
 for (counter in vector){code to run}
 ```{r Challenge3-5, echo=TRUE}
 plot(c(0, 50), c(0, 15), type = "n", xlab = "Sample Size", ylab = "Variance")
-for (n in seq(5, 50, 5))
+for (n in seq(5, 50, 5)) # 5 to 50 by 5
 {
     for (i in 1:50) # 50 replicates for (i in 1:50) # 50 replicates
     {
@@ -223,6 +223,7 @@ for (n in seq(5, 50, 5))
 }
 ```
 Sample vairance gets tighter as sample size gets bigger. There is more certainty!!! Less variance.
+The larger your sample size, the better it is as an estimator for the population
 
 **Standard Deviation** is simply the square root of the variance (taking the sum of squares to the population variance by averaging it and now square rooting it)
 
@@ -282,7 +283,9 @@ se(x)
 ```
 
 ## Calculating Confidence Intervals using Standard Errors
-Pasting most of this from the instructions for reference:
+Pasting most of this from the instructions for reference (with notes from class 9/28/2023):
+
+Standard errors can be used to calculaute the CI around an estimate.
 
 A **confidence interval** shows the likely range of values into which an estimate would fall if the sampling exercise were to be repeated
 
@@ -290,9 +293,13 @@ We can talk about different confidence intervals (e.g., 50%, 95%, 99%), and the 
 
 The 95% confidence interval, then, describes the range of values into which a statistic, calculated based on a repeated sample, would be expected to fall 95% of the time.  We typically estimate confidence intervals with respect to specific theoretical distributions (e.g., normal, Poisson, Student’s t, F) and different characteristics about our sample (e.g., mean, standard deviation, degrees of freedom).
 
+**We take a sample from a population and take the mean, that's a data point. RESAMPLE the population and take the mean, and do it again and again. The 95% confidence interval will tell you where that mean will fall 95% of the time if you sample AGAIN.**
+
 For example, suppose we wanted to calculate a 95% confidence interval around our estimate of the mean for a particular set of observations, assuming those data reflect a random variable that is normally distributed and that our observations are independent. We would simply find the values corresponding to the numbers of standard errors away from the mean our statistic would be expected to fall 95% of the time.
 
 We can calculate this by multiplying our estimate of the standard error by the quantile normal (qnorm()) function. Basically, we give the qnorm() function a quantile, and it returns the value of X below which that proportion of the cumulative probability function falls. For example, qnorm(0.025, mean=0, sd=1) tells us the number of standard deviations away from the mean that correspond with up to 2.5% of of the normal distribution with mean=0 and sd=1. qnorm(0.975, mean=0, sd=1) tells us the number of standard deviations up to which 97.5% of observations should fall.
+
+**2.5% on either side of the distribution. Normalizing data is making the mean 0, SD=1... this is shocking**
 
 Let’s take a quick look at the NORMAL DISTRIBUTION. Here, we use the rnorm() function to sample 10000 numbers from a normal distribution with mean = 0 and standard deviation = 1. [I am using set.seed() here so that each time I run this function, I return the same set of random numbers.]
 
@@ -301,15 +308,16 @@ set.seed(1)
 x <- rnorm(10000, 0, 1)
 hist(x)
 ```
+having a SD=1 makes 60% of the data +/- 1 from the mean.
 
 plot the density and probability distributions for a normal distribution. In these plots, cex= sets the size of the points being plotted.
 
 ```{r CI-2, echo=TRUE}
 x <- seq(from = -4, to = 4, by = 0.01)
-plot(x, dnorm(x), cex = 0.4)
-plot(x, pnorm(x), cex = 0.4)
-x <- seq(from = 0, to = 1, by = 0.01)
-plot(qnorm(x), x, cex = 0.4)
+plot(x, dnorm(x), cex = 0.4) #density so this will tell you the probabiltiy of each value
+plot(x, pnorm(x), cex = 0.4) #cumulative probability function - the limit of the values (4) is when you get to probability 1
+x <- seq(from = 0, to = 1, by = 0.01) #redefining x
+plot(qnorm(x), x, cex = 0.4) #qnorm is the complement of pnorm and this is plotting the complement of the complement
 ```
 
 Calculating CI given this vector:
@@ -337,6 +345,7 @@ lower <- m + qnorm(0.025, mean = 0, sd = 1) * e  # or lower <- m - qnorm(0.975)*
 ci <- c(lower, upper)
 ci
 ```
+Using qnorm because it tells you the value at a certain probability (p, the arugment in qnorm is a probability)
 
 And to make a CI function:
 

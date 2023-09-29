@@ -9,6 +9,7 @@ output: html_document
 library(manipulate)
 library(ggplot2)
 ```
+Instructions copied from the module assignment for reference later. Notes from class in 9/28
 
 ## Probability
 The term probability is applied to population level variables that describe the magnitude of chance associated with particular observations or event. Probabilities summarize the relative frequencies of possible outcomes. Probabilities are properties of distributions. Probabilities vary between zero and one. Outcomes that are impossible have Pr = 0, those that are certain have Pr = 1.
@@ -29,7 +30,7 @@ manipulate(hist(sample(outcomes, n, replace = TRUE), breaks = c(0.5, 1.5, 2.5,
 sample() takes a sample of the data (first argument, in this case the vector 'outcomes') and samples it n number of times with or without replacement (putting back or not the elements)
 hist() is building the histogram with the data being the sample() results, breaks being defined as between the vector elements, freq not defined but probability is so not defaulting to TRUE. 
 
-Everytime we run the code it changes becausw it is simulating 100 die rolls each time
+Every time we run the code it changes becausw it is simulating 100 die rolls each time
 
 ## Challenge 1: Dice Rolling
 
@@ -108,12 +109,17 @@ PrA
 
 What is the probability that you draw a spade given that you draw a face card? 
 
-Pr (A | B) = Pr (A ⋂ B) ÷ Pr (B) or [ Pr (A) × Pr (B) ] ÷ Pr (B) = Pr (A). Since drawing a spade is independent from drawing a face card I will use this to show thatt Pr of A given B is the same as Pr(A)
+Pr (A | B) = Pr (A ⋂ B) ÷ Pr (B) or [ Pr (A) × Pr (B) ] ÷ Pr (B) = Pr (A). 
+Pr (A ⋂ B) = Pr (A | B) × Pr (B) = Pr (B | A) × Pr (A) 
+
+Since drawing a spade is independent from drawing a face card I will use this to show that Pr of A given B is the same as Pr(A)
+
 ```{r Challenge2-4, echo=TRUE}
 PrB <- 12/52
 PrB
 PrA <- 1/4
 PrA
+# 3/12 face cards are spades so 1/4 of them are spades. It is the same as PrA but we can prove that below.
 PrAgB <- (PrA*PrB)/PrB
 PrAgB
 ```
@@ -215,6 +221,8 @@ To be a valid PDF, a function f(x) must satisfy the following:
 ### Beta Distribution
 The Beta Distribution refers to a family of continuous probability distributions defined over the interval [0, 1] and parametrized by two positive shape parameters, denoted by α and β, that appear as exponents of the random variable x and control the shape of the distribution.
 
+Beta distribution used in proportions. Such as leg proportions relative to body size.
+
 f(x) = K xα−1(1−x)β−1
 
 If we set K = 2, α = 2, and β = 1 and restrict the domain of x to [0, 1], it gives us a triangular function that we can graph as follows:
@@ -241,6 +249,7 @@ Does it satisfy x being between negative infinity and positive infinity?
 Is the total area under the line = 1?
 
 ```{r RandomVars-6, echo=TRUE}
+manipulate(plot(1:5, cex=size), size = slider(0.5,10,step=0.5))
 manipulate(ggplot(data = d, aes(x = x, y = fx)) + xlab("x") + ylab("f(x)") +
     geom_line() + geom_polygon(data = data.frame(xvals = c(0, n, n, 0), fxvals = c(0,
     K * n^(a - 1) * (1 - n)^(b - 1), 0, 0)), aes(x = xvals, y = fxvals)) + ggtitle(paste("Area Under Function = ",
@@ -335,6 +344,10 @@ Again, the probability of success on each trial = p and the probability of not s
 
 See Module 8 instruactions for formulae for binomal distribution (n choose k stuff)
 
+n trials with k successes
+n choose k = Probability of k successes in n trials
+When there is only 1 trial (n=1) that is the bernoulli distribution
+
 ## Challenge 4: Binomial Distribution
 
 What is the chance of getting a “1” on each of six consecutive rolls of a die?
@@ -361,14 +374,15 @@ prob
 
 Can also use built in function in r
 
+recall d[distribution] functions will tell you the probability at a given x value
+
 ```{r Challenge4-3, echo=TRUE}
 dbinom(x = k, size = n, prob = p)
 ```
+
+and can use pbinom() to see the probability of observing up to and including a given number of successes in n trials
  
- and can use pbinom() to see the probability of observing up to and including a given number of successes in n
- trials
- 
- This is how many times you could see 0 to 6 "1's" after rolling a die 6 times. 
+This is how many times you could see 0 to 6 "1's" after rolling a die 6 times. 
  
 ```{r Challenge4-4, echo=TRUE}
 probset <- dbinom(x = 0:6, size = 6, prob = 1/6)  # x is number of successes, size is number of trials
@@ -445,6 +459,9 @@ l <- 20
 barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x",
     ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
 ```
+
+dpois will give you probability at a single point 
+ppois will give you multiple probabilities from a point on
 ### Homework 2
 Every Saturday, at the same time, a primatologist goes and sits in the forest in the morning and listens for titi monkey calls, counting the number of calls they hear in a 2 hour window from 5am to 7am. Based on previous knowledge, she believes that the mean number calls she will hear in that time is exactly 15. Let X represent the appropriate Poisson random variable of the number of calls heard in each monitoring session.
 
@@ -520,7 +537,7 @@ x <- seq(from = a - (b - a), to = b + (b - a), length.out = 10000)
 length(x)
 fx <- runif(10000, min = a, max = b)  #runif is random simulation
 length(fx)
-plot(x, fx, type = "l", xlab = "x", ylab = "f(x)", main = "Probability Density Function")
+hist(fx, xlab = "x", ylab = "f(x)", main = "Probability Density Function")
 ```
 
 ## Normal Distribution
@@ -542,7 +559,7 @@ The function, dnorm() gives the point value of the normal density function at a 
 
 Recall, it does not make sense to talk about the “probability” associated with a given value of x as this isa density not a mass functions, but we can talk about the probability of x falling within a given interval.
  
-```{r NormalDist-2, echo=TRUE}
+```{r NormalDist-2, eval=FALSE, include=TRUE}
 manipulate(plot(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
     dnorm(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
         mean = mu, sd = sigma), type = "l", xlim = c(mu - 4 * sigma, mu + 4 *
@@ -559,7 +576,7 @@ manipulate(plot(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out =
 
 The pnorm() function, as with the p- variant function for other distributions, returns the cumulative probability of observing a value less than or equal to x, i.e., Pr (X ≤ x). Type it the code below and then play with values of μ and σ to look at how the cumulative distibution function changes.
 
-```{r NormalDist-3, echo=TRUE}
+```{r NormalDist-3, eval=FALSE, include=TRUE}
 manipulate(plot(seq(from = (mu - 6 * sigma), to = (mu + 6 * sigma), length.out = 1000),
     pnorm(seq(from = (mu - 6 * sigma), to = (mu + 6 * sigma), length.out = 1000),
         mean = mu, sd = sigma), type = "l", xlim = c(-20, 20), xlab = "x", ylab = "f(x)",
@@ -594,7 +611,7 @@ p
 
 Another one of the main functions in R for probability distributions, the qnorm() function, will tell us the value of x below which a given proportion of the cumulative probability function falls. As we saw earlier, too, we can use qnorm() to calculate confidence intervals. The code below
 
-```{r NormalDist-7, echo=TRUE}
+```{r NormalDist-7, eval=FALSE, include=TRUE}
 manipulate(plot(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
     dnorm(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
         mean = mu, sd = sigma), type = "l", xlim = c(mu - 4 * sigma, mu + 4 *
@@ -745,7 +762,7 @@ For each of these samples, we can then calculate a mean age, which is a statisti
 ```{r SampleDist-3, echo=TRUE}
 m <- NULL
 for (i in 1:k) {
-    m[i] <- mean(s[[i]])
+    m[i] <- mean(s[[i]]) #for each element in m, put the mean of s of list i in its place
 }
 mean(m)
 ```
