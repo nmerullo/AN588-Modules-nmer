@@ -132,6 +132,169 @@ Additionally, it suggests that variables that are expected to be the sum of mult
 
 [3] As sample size increases, the standard error of the mean decreases and the distribution becomes more and more normal (i.e., has less skew and kurtosis, which are higher order moments of the distribution).
 
-For a nice interactive simulation demonstrating the Central Limit Theorem, check out this cool website .
 
+## Confidence Intervals for Sample Proportions
 
+*How confident are we that our porportion of a sample will be the same for another proportion of a sample* 
+
+So far, we’ve talked about CIs for sample means, but what about for other statistics, e.g., sample proportions for discrete binary variables. For example, if you have a sample of n trials where you record the success or failure of a binary event, you obtain an estimate of the proportion of successes, x/n. If you perform another n trials, the new estimate will vary in the same way that averages of a continuous random variable (e.g., zombie age) will vary from sample to sample. Taking a similar approach as above, we can generate confidence intervals for variability in the proportion of successes across trials.
+
+Recall from our discussion of discrete random binary variables that the expectation for proportion of successes, which we will denote as π (where π, for “proportion”, is analogous to μ, for “mean”) is simply the average number of successes across multiple trials.
+
+The expected sampling distribution for the proportion of successes is approximately normal centered at π and its standard deviation is estimated by sqrt(π(1−π)/n), which is, essentially, the standard error of the mean: it is the square root of (the expected variance / sample size). As above for μ, if we do not already have a population estimate for π, we can estimate this from a sample as  = x/n
+
+Note: this expectation based on an approximation of the normal holds true only if both n×π and n*(1−π) are greater than roughly 5, so we should check this when working with proportion data.
+
+## Challenge
+
+Suppose a polling group in the Massachusetts is interested in the proportion of voting-age citizens in their state that already know they will vote for Elizabeth Warren in the upcoming November 5, 2024 general elections (don’t forget to vote!). The group obtains a yes or no answer from 1000 suitable randomly selected individuals. Of these individuals, 856 say they know they’ll vote for Senator Warren. How would we characterize the mean and variability associated with this proportion?
+
+Mean (pi)
+```{r challenge-1}
+n <- 1000
+x <- 856
+phat <- x/n  # our estimate of pi (voters out of sampled group saying they will vote for Liz)
+phat
+```
+
+n * pi and n * (1-pi) need to be greater than 5
+
+```{r challenge-2}
+n * phat
+n*(1-phat) #complement
+```
+
+Standard Error for population (how reliable our sample is as a representation of the pop)
+
+```{r challenge-3}
+pop_se <- sqrt((phat) * (1 - phat)/n)
+pop_se
+```
+
+So, what is the 95% CI around our estimate of the proportion of people who already know how they will vote?
+
+i.e., our confidence that of people who are already voting, what is the proportion that will vote for Liz 95% of the time (is that right??)
+
+```{r challenge-4}
+curve(dnorm(x, mean = phat, sd = pop_se), phat - 4 * pop_se, phat + 4 * pop_se)
+upper <- phat + qnorm(0.975) * pop_se
+lower <- phat - qnorm(0.975) * pop_se
+ci <- c(lower, upper)
+polygon(cbind(c(ci[1], seq(from = ci[1], to = ci[2], length.out = 1000), ci[2]),
+    c(0, dnorm(seq(from = ci[1], to = ci[2], length.out = 1000), mean = phat,
+        sd = pop_se), 0)), border = "black", col = "gray")
+abline(v = ci)
+abline(h = 0)
+lower
+upper
+```
+lower and upper proportions (bascially expressed as percentages) are pretty tight around the mean in this case, I guess because SE is pretty small.
+
+## Small Sample Confidence Intervals
+
+Thus far, we have discussed creating a confidence interval based on the CLT and the normal distribution, and our intervals took the form:
+
+mean ± Z (the quantile from the standard normal curve) × standard error of the mean
+
+But, when the size of our sample is small (n < 30), instead of using the normal distribution to calculate our CIs, statisticians typically use a different distribution to generate the relevant quantiles to multiply the standard error by… the t distribution (a.k.a., Gosset’s t or Student’s t distribution).
+
+Note that this is the typical case that we will encounter, as we often do not have information about the population that a sample is drawn from.
+
+The t distribution is a continuous probability distribution very similar in shape to the normal is generally used when dealing with statistics (such as means and standard deviations) that are estimated from a sample rather than known population parameters. Any particular t distribution looks a lot like a normal distribution in that it is bell-shaped, symmetric, unimodal, and (if standardized) zero-centered.
+
+The choice of the appropriate t distribution to use in any particular statistical test is based on the number of degrees of freedom (df), i.e., the number of individual components in the calculation of a given statistic (such as the standard deviation) that are “free to change”.
+
+We can think of the t distribution as representing a family of curves that, as the number of degrees of freedom increases, approaches the normal curve. At low numbers of degrees of freedom, the tails of the distribution get fatter.
+
+Confidence intervals based on the t distribution are of the form:
+
+mean ± T (the quantile from the t distribution) × standard error of the mean
+
+The only change from those based on the normal distribution is that we’ve replaced the Z quantile of the standard normal with a T quantile.
+
+Let’s explore this a bit…
+
+Recall that a standard normal distribution can be generated by normalizing our sample (subtracting the population mean from each observation and then dividing all of these differences by the population standard deviation)…
+
+(mean(x)-μ)/σ
+
+**If we subtract the population mean from each observation but then divide each difference, instead, by the standard error of the mean, (mean(x)-μ)/SEM, the result is not a normal distribution, but rather a t distribution! We are taking into account sample size by dividing by the standard error of the mean rather than the population standard deviation.**
+
+The code below plots a standard normal distribution and then t distributions with varying degrees of freedom, specified using the df= argument. As for other distributions, R implements density, cumulative probability, quantile, and random functions for the t distribution.
+
+```{r TDist-1}
+mu <- 0
+sigma <- 1 #standardised
+curve(dnorm(x, mu, 1), mu - 4 * sigma, mu + 4 * sigma, main = "Normal Curve=red\nStudent's t=blue",
+    xlab = "x", ylab = "f(x)", col = "red", lwd = 3)
+for (i in c(1, 2, 3, 4, 5, 10, 20, 100)) {
+    curve(dt(x, df = i), mu - 4 * sigma, mu + 4 * sigma, main = "T Curve", xlab = "x",
+        ylab = "f(x)", add = TRUE, col = "blue", lty = 5)
+}
+```
+
+The fatter tails of the t distribution lead naturally to more extreme quantile values given a specific probability than we would see for the normal distribution. If we define a CI based on quantiles of the t distribution, they will be correspondingly slightly wider than those based on the normal distribution for small values of df.
+
+We can see this as follows. Recall that above we estimated the 95% CI for a sample drawn from a normal distribution as follows:
+
+```{r TDist-2}
+n <- 1e+05
+mu <- 3.5
+sigma <- 4
+x <- rnorm(n, mu, sigma)
+sample_size <- 30
+s <- sample(x, size = sample_size, replace = FALSE)
+m <- mean(s)
+m
+sd <- sd(s)
+sd
+SEM <- sd(s)/sqrt(length(s))
+SEM
+lower <- m - qnorm(1 - 0.05/2) * SEM  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- m + qnorm(1 - 0.05/2) * SEM  # (1-alpha)/2 each in the upper and lower tails of the distribution
+ci_norm <- c(lower, upper)
+ci_norm
+```
+
+Now with t Distribution
+
+```{r TDist-3}
+lower <- m - qt(1 - 0.05/2, df = sample_size - 1) * SEM  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- m + qt(1 - 0.05/2, df = sample_size - 1) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+ci_t <- c(lower, upper)
+ci_t
+```
+
+CI pretty much the same bc sample size is the same just with one degree of freedom
+
+However, if we use a sample size of 5, the CI based on the t distribution is much wider.
+
+Normal first:
+
+```{r TDist-4}
+sample_size <- 5
+s <- sample(x, size = sample_size, replace = FALSE)
+m <- mean(s)
+m
+sd <- sd(s)
+sd
+sem <- sd(s)/sqrt(length(s))
+sem
+lower <- m - qnorm(1 - 0.05/2) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- m + qnorm(1 - 0.05/2) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+ci_norm <- c(lower, upper)
+ci_norm
+```
+
+pretty wide CI
+
+now with t
+
+```{r TDist-5}
+lower <- m - qt(1 - 0.05/2, df = sample_size - 1) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- m + qt(1 - 0.05/2, df = sample_size - 1) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+ci_t <- c(lower, upper)
+ci_t
+```
+
+Even wider bc we are recognizing there is less certainty
