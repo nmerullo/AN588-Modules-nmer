@@ -557,7 +557,7 @@ curve(dnorm(x, mu, sigma), mu - 4 * sigma, mu + 4 * sigma, main = "Normal Curve"
 
 The function, dnorm() gives the point value of the normal density function at a given value of x. x can range from -∞ to +∞.
 
-Recall, it does not make sense to talk about the “probability” associated with a given value of x as this isa density not a mass functions, but we can talk about the probability of x falling within a given interval.
+Recall, it does not make sense to talk about the “probability” associated with a given value of x as this is a density not a mass functions, but we can talk about the probability of x falling within a given interval.
  
 ```{r NormalDist-2, eval=FALSE, include=TRUE}
 manipulate(plot(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),

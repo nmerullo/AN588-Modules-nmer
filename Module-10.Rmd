@@ -1,0 +1,112 @@
+---
+title: "Module-10"
+author: "Nicole Merullo"
+date: "2023-10-03"
+output: html_document
+---
+#Classical Hypothesis Testing
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(curl)
+```
+
+*text copied from module instructions for reference with personal notes added in*
+
+## Null and Alternaitve Hypotheses
+
+Classical or frequentist hypothesis testing (a.k.a. parametric statistics) involves formally stating a claim - the null hypothesis - which is then followed up by statistical evaluation of the null versus an alternative hypotheses. The null hypothesis is interpreted as a baseline hypothesis and is the claim that is assumed to be true. The alternative hypothesis is the conjecture that we are testing.
+
+We need some kind of statistical evidence to reject the null hypothesis in favor of an alternative hypothesis. This evidence is, in classical frequentist approaches, some measure of how unexpected it would be for the sample to have been drawn from a given null distribution.
+
+H0 = null hypothesis = a sample statistic shows no deviation from what is expected or neutral
+
+HA = alternative hypothesis = a sample statistic deviates more than expected by chance from what is expected or neutral
+
+We can test several different comparisons between H0 and HA.
+
+HA > H0, which constitutes an "upper one-tailed test" (i.e., our sample statistic is greater than that expected under the null)
+
+HA < H0, which constitutes an "lower one-tailed test" (i.e., our sample statistic is less than that expected under the null)
+
+HA ≠ H0, which constitutes an "two-tailed test" (i.e., our sample statistic is different, maybe greater maybe less, than that expected under the null)
+
+There are then four possible outcomes to our statistical decision:
+
+Outcomes
+true: H0 Decide: H0 Result: Correctly 'accept' the null
+true: H0 Decide: HA Result: Falsely reject the null (Type I error)
+true: HA Decide: H0 Result: Falsely accept the null (Type II error)
+true: HA Decide: HA Result: Correctly reject the null
+
+In classical frequentist (a.k.a. parametric) inference, we perform hypothesis testing by trying to minimize our probability of Type I error… we aim for having a high bar for falsely rejecting the null (e.g., for incorrectly finding an innocent person guilty). When we set a high bar for falsely rejecting the null, we lower the bar for falsely ‘accepting’ (failing to reject) the null (e.g., for concluding that a guilty person is innocent).
+
+To do any statistical test, we typically calculate a test statistic based on our data, which we compare to some appropriate standardized sampling distribution to yield a p value.
+
+**The p value = the probability of our obtaining a test statistic that is as high or higher than our calculated one by chance, assuming the null hypothesis is true.**
+
+The test statistic basically summarizes the “location” of our data relative to an expected distribution based on our null model. The particular value of our test statistic is determined by both the difference between the original sample statistic and the expected null value (e.g., the difference between the mean of our sample and the expected population mean) and the standard error of the sample statistic. The value of the test statistic (i.e., the distance of the test statistic from zero) and the shape of the null distribution are the sole drivers of the smallness of the p value. The p value effectively represents the area under the sampling distribution associated with test statistic values as or more extreme than the one we observed.
+
+We compare the p value associated with our test statistic to some significance level, α, typically 0.05 or 0.01, to determine whether we reject or fail to reject the null. If p < α, we decide that there is sufficient statistical evidence for rejecting H0.
+
+How to calculate the p value:
+
+1. specify the test statistic like the mean
+2. specify the null distribution i.e., how the null statistic is distributed (normal, poisson etc)
+3. Calculate the tail probability, i.e., the probability of obtaining a statistic (mean etc) as or more extreme than was observed assuming that null distribution. 
+
+3 ? Basically what is the probability of getting a more extreme mean (given resampling?)
+
+## Testing Sample Means: One Sample Z and T Tests
+
+Let’s do an example where we try to evaluate whether the mean of a single set of observations is significantly different than expected under a null hypothesis… i.e., this is a ONE-SAMPLE test.
+
+Suppose we have a vector describing the adult weights of vervet monkeys trapped in South Africa during the 2016 trapping season. We have the sense they are heavier than vervets we trapped in previous years, which averaged 4.9 kilograms. The mean is 5.324 kilograms. Is the mean significantly greater than our expectation?
+```{r samplemeans-1}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/vervet-weights.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+Mean of vervet weights from this year:
+
+```{r samplemeans-2}
+mean(d$weight)
+```
+
+**What is H0?** Vervet mean weights are the same
+**What is HA?** Vervet mean weights are different
+Could be an upper tailed test or two tailed test (the latter more the way I described it, but if I had said vervet mean weights are greater this year as the HA then it would more be an upper tailed test)
+
+Mean, SD, SEM from Sample:
+
+```{r samplemeans-3}
+mu <- 4.9 #sample mean from previous years
+x <- d$weight
+m <- mean(x)
+s <- sd(x) #how much does the data (weights of vervets) vary from the mean
+n <- length(x) #(number of vervets)
+sem <- s/sqrt(n) #how reliable is this sample data in representing the population
+```
+
+Our test statistic takes a familiar form… it is effectively the standard normalized position of our sample mean in a distribution centered around the expected population mean.
+
+And the formula:
+Z = (mean of sample obs - expected mean) / (sample SD/sqrt # of sample obs)
+
+```{r samplemeans-4}
+z <- (m - mu)/sem
+z
+```
+
+In this case, z is a quantile… the estimated number of standard errors of the mean away from the population mean that our sample falls.
+
+If we then want to see if z is significant, we need to calculate the probability of seeing a deviation from the mean as high or higher than this by chance. To do this, we can use the pnorm() function. Because we have converted our sample mean to the standard normal scale, the mean= and sd= arguments of pnorm() are the defaults of 0 and 1, respectively.
+
+Remember that pnorm returns the cumulative probability less than or equal to the given quantile
+
+We want the probability of seeing a z this large or larger by chance.
+
+```{r samplemeans-5}
+p <- 1 - pnorm(z)
+p
+```
