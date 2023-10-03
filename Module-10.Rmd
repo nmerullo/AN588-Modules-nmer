@@ -73,8 +73,8 @@ Mean of vervet weights from this year:
 mean(d$weight)
 ```
 
-**What is H0?** Vervet mean weights are the same
-**What is HA?** Vervet mean weights are different
+**What is H0?** Vervet mean weights are the same (Vervet weights are not greater than 4.9)
+**What is HA?** Vervet mean weights are different (Vervet weights are great tthan 4.9)
 Could be an upper tailed test or two tailed test (the latter more the way I described it, but if I had said vervet mean weights are greater this year as the HA then it would more be an upper tailed test)
 
 Mean, SD, SEM from Sample:
@@ -110,3 +110,288 @@ We want the probability of seeing a z this large or larger by chance.
 p <- 1 - pnorm(z)
 p
 ```
+
+However, as noted above, our sample size from a population is typically limited. So, instead of using the normal distribution to determine the p value of our statistic, we should use the t distribution, which, as we’ve seen, has slightly fatter tails. The statistic and process is exactly the same, though, as for the normal distribution.
+
+```{r samplemeans-6}
+p <- 1 - pt(z, df = n - 1)
+p
+p <- pt(z, df = n - 1, lower.tail = FALSE) #lower.tail false is probability of greater than z (3 SEM away)
+p #results are exactly the same
+```
+
+Shows slightly less significance than with the normal distribution but that makes sense because of the fatter tails/less certainty
+
+R has built into it a single function, t.test(), that lets us do all this in one line. We give it our data and the expected population mean, μ, along with the kind of test we want to do.
+
+```{r samplemeans-7}
+t <- t.test(x = x, mu = mu, alternative = "greater")
+t
+```
+
+CI is also returned though it shows inf as one end??
+
+By hand:
+
+```{r samplemeans-8}
+lower <- m - qt(1 - 0.05/2, df = n - 1) * sem
+upper <- m + qt(1 - 0.05/2, df = n - 1) * sem
+ci <- c(lower, upper)
+ci
+```
+
+By T test:
+Have to use two sided arugment
+```{r samplemeans-9}
+t <- t.test(x = x, mu = mu, alternative = "two.sided")
+ci <- t$conf.int
+ci
+```
+
+Reject H0 - the vervet weights are signifcantly heavier than the previous trapping season (p<0.01)
+Avg from previous season falls outside of 95% CI for this season
+
+## Challenge 1
+
+Adult lowland woolly monkeys are reported to have an average body weight of 7.2 kilograms. You are working with an isolated population of woolly monkeys from the Peruvian Andes that you think may be a different species from the lowland form, and you collect a sample of 15 weights from adult individuals at that site. From your sample, you calculate a mean of 6.43 kilograms and a standard deviation of 0.98 kilograms.
+
+Perform a hypothesis test of whether body weights in your population are different from the reported average for lowland woolly monkeys by setting up a “two-tailed” hypothesis, carrying out the analysis, and interpreting the p value (assume the significance level is α=0.05). Your sample is < 30, so you should use the t distribution and do a t test. Do your calculations both by hand and using the t.test() function and confirm that they match.
+
+```{r Challenge1-1}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall21/woolly-weights.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+```{r Challenge1-2}
+mu <- 7.2 #sample mean of lowland woolly monkeys
+x <- d$weight
+m <- mean(x)
+m
+s <- sd(x) #how much does the data (weights of woolly monkeys vary from the mean
+n <- length(x) #(number of woolly monkeys)
+sem <- s/sqrt(n) #how reliable is this sample data in representing the population
+sem
+t <- (m - mu)/sem
+t
+p <- 1 - pt(t, df = n - 1)
+p
+p <- pt(t, df = n -1, lower.tail=FALSE)
+p
+p1 <- pt(t, df = n - 1)
+p1
+```
+
+H0 is that they are the same, HA is that they are different
+H0 is accepted because the p value is >0.05. The cumulative probability of getting anything other than </= -3.34 is very high and (right side) same if you do >-3.34 which is the same thing (right side). But the cumulative probability of just getting </= -3.34 (the left side) is significant.
+
+Here is what is included in the module:
+
+```{r Challenge1-3}
+alpha <- 0.05
+crit <- qt(1 - alpha/2, df = n - 1)  # identify critical values
+test <- t < -crit || t > crit  # boolean test as to whether t is larger than the critical value at either tail
+test <- abs(t) > crit
+test
+```
+
+Basically is the t value larger than value at tails where significance is reached. It is true so it is >0.05 thus not significant??
+
+```{r Challenge1-4}
+mu <- 7.2 #sample mean of lowland woolly monkeys
+x <- d$weight
+m <- mean(x)
+m
+s <- sd(x) #how much does the data (weights of woolly monkeys vary from the mean
+n <- length(x) #(number of woolly monkeys)
+sem <- s/sqrt(n) #how reliable is this sample data in representing the population
+sem
+t.test(x=x, mu=mu, alternative = "two.sided")
+```
+
+I got very different p values in my by hand version... this one is showing significance.
+
+Conflicting results, cannot decide on hypothesis. Cannot detemrine if these are a separate species or not.
+
+## Comparing Sample Means: Two Sample Z and T Tests
+
+Sometimes we want to compare two groups of measurements to one another, which boils down to a hypothesis test for the difference between two means, μ1 and μ2. **The null hypothesis is that the difference between the means is zero.**
+
+Before getting to the appropriate test, there are a couple of things that we need to consider:
+
+[1] How, if at all, are the two samples related to one another? Sometimes we may have PAIRED samples (e.g., the same individuals before and after some treatment) and sometimes the samples are UNPAIRED or INDEPENDENT (e.g., weights for different samples of black-and-white colobus monkeys collected in the rainy versus dry seasons).
+
+[2] Are the variances in the two samples roughly equal or not? E.g., if we are comparing male and female heights, are the variances comparable?
+
+### Samples with unequal variances
+
+For the most generic case, where the two samples are independent and we cannot assume the variances of the two samples are equal, we can do what is called Welch’s t test where our test statistic is:
+
+T = (mean of x2 = mean of x1 - mu)/(sqrt (sd1 squared/# of obs 1 + sd2 squared/# of obs 2))
+
+
+## Challenge 2
+
+Let’s do an example. Load in a file of black-and-white colobus weights and examine the str() of the file. Then, create 2 vectors, x and y, for male and female weights. Plot these in boxplots side by side and then calculate the mean, sd, and sample size for both males and females.
+
+```{r Challenge2-1}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/colobus-weights.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+str(d)
+```
+
+vectors for male and female weight
+```{r Challenge2-2}
+x <- d$weight[d$sex == "male"]
+y <- d$weight[d$sex == "female"] #subset then subset again
+x
+y
+```
+
+boxplot
+
+```{r Challenge2-3}
+par(mfrow = c(1,2))
+boxplot(x, ylim = c(4.5, 8), main = "Weight (kg)", xlab = "Males")
+boxplot(y, ylim = c(4.5, 8), main = "Weight (kg)", xlab = "Females")
+```
+
+determining means, sds, and ns
+
+```{r Challenge2-4}
+m1 <- mean(x)
+m1
+m2 <- mean(y)
+m2
+mu <- 0  # you could leave this out... the default argument value is 0
+s1 <- sd(x)
+s1
+s2 <- sd(y)
+s2
+n1 <- length(x)
+n2 <- length(y)
+```
+
+Now calculate the t stat and test the two tailed hypothesis
+
+```{r Challenge2-5}
+t <- (m2-m1-mu) / sqrt(s2^2/n2 + s1^2/n1)
+t
+```
+
+and the critical values part 
+
+```{r Challenge2-6}
+alpha <- 0.05
+crit <- qt(1 - alpha/2, df = n - 1)  # identify critical values
+crit #basically the values at probability of 0.05
+```
+
+And now seeing if the t stat is larger than the critical values
+
+```{r Challenge2-7}
+test <- t < -crit || t > crit  # boolean test
+test <- abs(t) > crit
+test
+```
+
+Note that for this test, the number of degrees of freedom is calculated as:
+
+```{r Challenge2-8}
+df <- (s2^2/n2 + s1^2/n1)^2/((s2^2/n2)^2/(n2 - 1) + (s1^2/n1)^2/(n1 - 1))
+df
+```
+
+Ok same thing with t tes function
+
+```{r Challenge2-9}
+t <- t.test(x=x, y=y, mu=mu, altnernative= "two.sided")
+t
+```
+
+P value is very small thus is significant. We reject the null hypothesis.
+
+## Samples with Equal Variances
+
+There’s a simpler t statistic we can use if the variances of the two samples are more or less equal.
+T = (mean of x2 - mean of x1 - mu)/ sqrt (sd of pooled sample squared(1/#of obs1 + 1/#of obs 2))
+See module instructions for how to get sd of pooled sample (they have the same variance from the mean which is why we can do this)
+
+df = n1 + n2 -2
+
+```{r EqualVar-1}
+s <- sqrt((((n1 - 1) * s1^2) + ((n2 - 1) * s2^2))/(n1 + n2 - 2))
+t <- (m2 - m1 - mu)/(sqrt(s^2 * (1/n1 + 1/n2)))
+t
+df <- n1 + n2 - 2
+df
+t <- t.test(x = x, y = y, mu = 0, var.equal = TRUE, alternative = "two.sided")
+t
+```
+
+Even more significance
+
+A crude test for equality of variances is to divide the larger by the smaller and if the result is < 2, you can go ahead and used the pooled variance version of the test (which has many fewer degrees of freedom).
+
+```{r EqualVar-2}
+var(x)/var(y)
+```
+
+This is greater than 2 so they have different variances for the purposes of these tests
+
+We can use the var.test() function to conduct an actual statistical test on the ratio of variances, which compares the ratio test statistic we just calculated to an F distribution. The F distribution is often used to model ratios of random variables and thus is useful in regression applications and, as here, for testing whether variances from two samples are different. It is dependent upon the specification of a pair of degrees of freedom values supplied as the arguments df1= and df2= (or inferred from the number of observations in each sample).
+
+Below, the results of var.test() are saved to a variable. Calling the variable provides a brief descriptive summary.
+
+```{r EqualVar-3}
+vt <- var.test(x, y)
+vt
+```
+
+## Paired Samples
+
+For a paired sample test, the null hypothesis is that the mean of individual paired differences between the two samples (e.g., before and after) is zero.
+
+Our test statistic is:
+
+T = (mean of difference b/w paired samples - mu) / (sqrt (sd of differences squared / # of sample pairs))
+
+Again, note that μ here is the expected difference between the means under the null hypothesis, which is zero, and we are dividing by the standard error of the mean for the set of differences between pairs.
+
+## Challenge 3
+
+Let’s play with a sample… IQs of individuals taking a certain statistics course before and after a lecture on significance testing. Load in the iqs.csv data file, look at it, plot a barchart of values before and after and construct a paired t test to evaluate the means before and after.
+
+```{r Challenge3-1}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/iqs.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+```{r Challenge3-2}
+x <- d$IQ.before - d$IQ.after
+m <- mean(x)
+mu <- 0  # can leave this out
+s <- sd(x)
+n <- length(x)
+sem <- s/sqrt(n)
+par(mfrow = c(1, 2))
+boxplot(d$IQ.before, ylim = c(115, 145), main = "IQ", xlab = "Before")
+boxplot(d$IQ.after, ylim = c(115, 145), main = "IQ", xlab = "After")
+```
+
+two tailed test
+
+```{r Challenge3-3}
+t <- (m - mu)/sem
+t
+alpha <- 0.05
+crit <- qt(1 - alpha/2, df = n - 1)  # identify critical values
+crit
+test <- t < -crit || t > crit  # boolean test
+test
+t.test(x, df = n - 1, alternative = "two.sided")
+```
+
+NOT SIGNIFICANT
