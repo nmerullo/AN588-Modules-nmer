@@ -1,0 +1,137 @@
+---
+title: "Module-9"
+author: "Nicole Merullo"
+date: "2023-10-03"
+output: html_document
+---
+# Introduction to Statistical Inference
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(curl)
+```
+
+*text copied from module instructions for reference with personal notes added in*
+
+## Standard Errors and CIs
+
+The general way to define a confidence interval based on data from a sample is as the value of the statistic being considered (e.g., the mean) ± some critical value × the standard error of the statistic.
+
+The critical value is derived from the standardized version of a sampling distribution (e.g., the normal distribution) that corresponds the quantile limits we are interested in. For example, for the 95% CI around the mean, the critical value corresponds the range of quantiles above and below which we expect to see only 5% of the distribution of statistic values. This is equivalent to the ± 1 - (α
+/2) quantiles, where α=0.05, i.e., the ± 0.975 quantile that we have used before for calculating 95% CIs.
+
+**must use qnorm because it tells you the value x at a certain probability*
+
+The standard error is the standard deviation of the sampling distribution, which, as noted above, is often estimated from the sample itself as σ/sqrt(n) but can also be calculated directly from the population standard deviation, if that is known.
+
+Recall that in Module 8, we created a vector, v, containing 1000 random numbers selected from a normal distribution with mean 3.5 and standard deviation 4. We then calculated the mean, standard deviation, and standard error of the mean (SEM) based on a sample of 30 observations drawn from that vector, and we used the normal distribution to characterize the quantiles associated with the central 95% of the distribution to define the upper and lower bounds of the 95% CI.
+
+```{r CI}
+n <- 1000
+mu <- 3.5
+sigma <- 4
+v <- rnorm(n, mu, sigma)
+s <- sample(v, size = 30, replace = FALSE)
+m <- mean(s)
+m
+sd <- sd(s)
+sd
+sem <- sd(s)/sqrt(length(s))
+sem
+lower <- m - qnorm(1 - 0.05/2) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- m + qnorm(1 - 0.05/2) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+ci <- c(lower, upper)
+ci
+```
+CI a little different because numbers simulated
+
+## Central Limit Theorem
+
+Thus far, our construction of CIs has implicitly taken advantage of one of the most important theorems in statistics, the Central Limit Theorem. The key importance of the CLT for us is that it states that the distribution of averages (or sums or other summary statistics…) of iid (independent and identically distributed) random variables becomes normal as the sample size increases. It is this fact that allows us to have a good sense of the mean and distribution of average events in a population even though we only observe one set of events and do not know what actual population distribution is. In fact, the CLT says nothing about the probability distribution for events in the original population, and that is exactly where its usefulness lies… that original probability distribution can be normal, skewed, all kinds of odd!
+
+But we can nonetheless assume normality for the distribution of sample mean (or of the sum or mode, etc…) no matter what kind of probability distribution characterizes the initial population, as long as our sample size is large enough and our samples are independent. It is thus the CLT that allows us to make inferences about a population based on a sample.
+
+Just to explore this a bit, let’s do some simulations. We are going to take lots of averages of samples from a particular non-normal distribution and then look at the distribution of those averages. Imagine we have some event that occurs in a population according to some probability mass function like the Poisson where we know λ
+=14. Recall, then, that the expectations of μ
+ and σ2
+ for the Poisson distribution are both=λ
+.
+
+Now let’s imagine taking a bunch of samples of size 10 from this population. We will take 1000 random samples of this size, calculate the average of each sample, and plot a histogram of those averages… it will be close to normal, and the standard deviation of the those average - i.e., of the sampling distribution - should be roughly equal to the estimated standard error, the square root of (λ/n)
+. [Recall that λ
+ is the expected variance, so this is simply the square root of (expected variance / sample size)]
+ 
+```{r CLM-1}
+lambda <- 14
+n <- 10
+pop_se <- sqrt(lambda/n)  # the estimated SE
+pop_se
+x <- NULL
+for (i in 1:1000) {
+    x[i] <- mean(rpois(n = n, lambda = lambda))
+}
+hist(x, breaks = seq(from = lambda - 4 * sqrt(lambda)/sqrt(n), to = lambda +
+    4 * sqrt(lambda)/sqrt(n), length.out = 20), probability = TRUE)
+sd <- sd(x)  # st dev of the sampling distribution
+sd
+```
+```{r CLM-2}
+qqnorm(x)
+qqline(x)
+```
+
+Sampling 10 is representative of the 1000 population
+what if it is 100 out of the 1000
+
+```{r CLM-3}
+n <- 100
+pop_se <- sqrt(lambda/n)  # the estimated SE
+pop_se
+x <- NULL
+for (i in 1:1000) {
+    x[i] <- mean(rpois(n = n, lambda = lambda))
+}
+hist(x, breaks = seq(from = lambda - 4 * sqrt(lambda)/sqrt(n), to = lambda +
+    4 * sqrt(lambda)/sqrt(n), length.out = 20), probability = TRUE)
+sd <- sd(x)  # st dev of the sampling distribution
+sd
+qqnorm(x)
+qqline(x)
+```
+
+lower SD (less variance)
+
+We can convert these distributions to standard normals by subtracting off the expected population mean (λ) and dividing by the standard error of the mean (an estimate of the standard deviation of the sampling distribution) and then plotting a histogram of those values along with a normal curve
+
+
+```{r CLM-4}
+curve(dnorm(x, 0, 1), -4, 4, ylim = c(0, 0.8))
+z <- (x - lambda)/pop_se
+hist(z, breaks = seq(from = -4, to = 4, length.out = 20), probability = TRUE,
+    add = TRUE)
+```
+Looks normal, here's another
+```{r CLM-5}
+n <- 100
+x <- NULL
+for (i in 1:1000) {
+    x[i] <- sum(rpois(n = n, lambda = lambda))
+}
+hist(x, breaks = seq(min(x), max(x), length.out = 20), probability = TRUE)
+```
+
+Take Home Points:
+
+[1] The CLT states that, regardless of the underlying distribution, the distribution of averages (or sums or standard deviations, etc…) based on a large number of independent, identically distributed variables:
+
+will be approximately normal,
+will be centered at the population mean, and – will have a standard deviation roughly equal to the standard error of the mean.
+Additionally, it suggests that variables that are expected to be the sum of multiple independent processes (e.g., measurement errors) will also have distributions that are nearly normal.
+
+[2] Taking the mean and adding and subtracting the relevant standard normal quantile ×
+ the standard error yields a confidence interval for the mean, which gets wider as the coverage increases and gets narrower with less variability or larger sample sizes.
+
+[3] As sample size increases, the standard error of the mean decreases and the distribution becomes more and more normal (i.e., has less skew and kurtosis, which are higher order moments of the distribution).
+
+For a nice interactive simulation demonstrating the Central Limit Theorem, check out this cool website .
+
+
