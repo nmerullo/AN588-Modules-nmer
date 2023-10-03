@@ -395,3 +395,32 @@ t.test(x, df = n - 1, alternative = "two.sided")
 ```
 
 NOT SIGNIFICANT
+
+## Testing Sample Proportions: One Sample Z Test
+
+As we have seen, the sampling distribution of sample means for independent and identically distributed random variables is roughly normal (and, as shown by the CLT, this distribution increasingly approaches normal as sample size increases). Similarly, the sampling distribution for another kind of sample statistic, the number of “successes” x out of a series of k trials is also roughly normally distributed. If the true population proportion of “successes” is π, then the sampling distribution for the proportion of successes in a sample of size n is expected to be roughly normally distributed with mean = π and standard error = sqrt(π(1−π)/n).
+
+Let’s set up a simulation to show this…
+
+First we create a population of 500 “1”s and 500 “0”s, i.e., where π = 0.5…
+
+```{r ZTest-1}
+pop <- c(rep(0, 500), rep(1, 500))
+```
+
+Now, we will take 1000 random samples of size n=10 from that population and calculate the proportion of “1”s in each sample…
+
+```{r ZTest-2}
+pi <- 0.5
+x <- NULL
+n <- 10
+for (i in 1:1000) {
+    x[i] <- mean(sample(pop, size = n, replace = FALSE))  # taking the mean of a bunch of 0s and 1s yields the proportion of 1s!
+}
+m <- mean(x)
+m
+s <- sd(x)
+s
+pop_se <- sqrt(pi * (1 - pi)/n)
+pop_se  # the se is an estimate of the sd of the sampling distribution
+```
