@@ -74,7 +74,7 @@ mean(d$weight)
 ```
 
 **What is H0?** Vervet mean weights are the same (Vervet weights are not greater than 4.9)
-**What is HA?** Vervet mean weights are different (Vervet weights are great tthan 4.9)
+**What is HA?** Vervet mean weights are different (Vervet weights are great than 4.9)
 Could be an upper tailed test or two tailed test (the latter more the way I described it, but if I had said vervet mean weights are greater this year as the HA then it would more be an upper tailed test)
 
 Mean, SD, SEM from Sample:
@@ -424,3 +424,165 @@ s
 pop_se <- sqrt(pi * (1 - pi)/n)
 pop_se  # the se is an estimate of the sd of the sampling distribution
 ```
+
+The same is true if we create a population of 800 “1”s and 200 “0”s, i.e., where π = 0.8…
+
+```{r ZTest-3}
+pop <- c(rep(0, 800), rep(1, 200))
+pi <- 0.8
+x <- NULL
+n <- 10
+for (i in 1:1000) {
+    x[i] <- mean(sample(pop, size = n, replace = FALSE))  # taking the mean of a bunch of 0s and 1s yields the proportion of 1s!
+}
+m <- mean(x)
+m
+s <- sd(x)
+s
+pop_se <- sqrt(pi * (1 - pi)/n)
+pop_se  # the se is an estimate of the sd of the sampling distribution
+```
+
+This normal approximation is true as long as n is fairly large and π is not close to 0 or 1. One rule of thumb is to check that both n×π and n×(1−π) are greater than 5.
+
+With all this in mind, we can construct Z statistics for proportions like we constructed Z and T statistics for means and test those proportions for differences from an expected value or for differences between two sample proportions. The Z statistic for proportions takes the same general form as that for means…
+
+z = (observed statistic - expected statistic) / standard error
+
+## Challenge 4
+
+A neotropical ornithologist working in the western Amazon deploys 30 mist nets in a 100 hectare (ha) grid. She monitors the nets on one morning and records whether or not she captures any birds in the net (i.e., a “success” or “failure” for every net during a netting session). The following vector summarizes her netting results:
+
+```{r Challenge4-1}
+v <- c(0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0,
+    1, 1, 0, 1, 0, 1, 1)
+```
+
+Her netting success over the previous three seasons suggests that she should catch birds in 80% of her nets. This season, she feels, her success rate is lower than in previous years. Does her trapping data support this hypothesis?
+
+**What is H0?**
+Netting success is the same as last year
+**What is HA?**
+Netting success is lower than previous years
+**Are both n×π and n×(1−π) > 5?**
+```{r Challenge4-2}
+n <- length(v)
+pi <- 0.8 #success rate of birds in nests
+n*pi
+n*(1-pi)
+```
+**Calculate z and the p value associated with z**
+```{r Challenge4-3}
+phat <- mean(v)
+phat
+z <- (phat - pi)/sqrt(pi * (1 - pi)/30)
+z
+```
+**Calculate the 95% CI around** 
+```{r Challenge4-4}
+p <- pnorm(z, lower.tail = TRUE) #lower tail true because it is a lower tailed one tailed hypothesis (the rate is lower than previous years)
+p
+lower <- phat - qnorm(0.975) * sqrt(phat * (1 - phat)/30)
+upper <- phat + qnorm(0.975) * sqrt(phat * (1 - phat)/30)
+ci <- c(lower, upper)
+ci
+```
+
+This approach using quantiles of the standard normal distribution is but one method of calculating CIs for proportion data, and is the CI referred to as a Wald confidence interval. Note that the CI does not include the value of π… rather, π > is greater than the upper bound of the CI, suggesting that the observed success rate is indeed lower than in previous years.
+
+We can do the same test with a one-liner in R…
+
+```{r Challenge4-5}
+pt <- prop.test(x = sum(v), n = length(v), p = 0.8, conf.level = 0.95, correct = FALSE,
+    alternative = "less")
+pt
+```
+
+Note that the CI is different than we calculated based on the normal distribution… prop.test() implements a slightly different procedure for estimating the CI rather than basing this on the normal distribution and the CLT.
+
+How should she interpret these results? Was she right that her trapping results are off this year?
+
+*Average of this year being 60% is significantly lower than previous year*
+
+## Comparing Sample Proportions: Two Sample Z Tests
+
+The Z statistic for the two sample test comparing proportions is also very similar to that for comparing means.
+
+Z = (phat2 - phat1 - pi) / sqrt (pstar(1-pstar)(1/n1+1/n2))
+
+phat is the proportions of successes in each sample group
+pi is the expected difference in proportions between sample groups (usually set to 0)
+pstar is the pooled proportion
+Pstar = x1 + x2 / n1 + n2
+
+## Challenge 5
+
+A biologist studying two species of tropical bats captures females of both species in a mist net over the course of week of nightly netting. For each species, the researcher records whether females are lactating or not. The two vectors below summarize the data for each species.
+
+```{r Challenge5-1}
+v1 <- c(1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0,
+    1, 0)
+v2 <- c(1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0,
+    0, 1, 1, 0, 1, 1, 1)
+```
+
+Based on your mist netting data, do the species differ significantly in the proportion of lactating females during this trapping season? What are H0 and HA?
+
+H0 is no difference (pi is zero), HA is difference (two tailed hypothesis)
+
+```{r Challenge5-2}
+phat1 <- mean(v1)
+phat1
+phat2 <- mean(v2)
+phat2
+pi <- 0
+```
+
+pstar:
+Pstar = x1 + x2 / n1 + n2
+```{r Challenge5-3}
+pstar <- (sum(v1) + sum(v2)) / (length(v1)+length(v2))
+pstar
+```
+
+z value
+
+```{r Challenge5-4}
+z <- (phat2 - phat1)/sqrt((pstar * (1 - pstar)) * (1/length(v1) + 1/length(v2)))
+z
+```
+
+pnorm for p value plus crit values thing for two tailed hypothesis
+
+```{r Challenge5-5}
+p <- 1 - pnorm(z, lower.tail = TRUE) + pnorm(z, lower.tail = FALSE)
+p
+crit <- qnorm(1 - alpha/2)  # identify critical values
+crit
+test <- p < -crit || p > crit  # boolean test
+test
+```
+False is not significant
+
+We can use the prop.test() function to do this in one line.
+
+```{r Challenge5-6}
+pt <- prop.test(x = c(sum(v2), sum(v1)), n = c(length(v2), length(v1)), alternative = "two.sided",
+    correct = FALSE)
+pt
+```
+What are her results? Are the proportions of lactating females different across species during this trapping season?
+
+Not significant
+
+## Summary of Z and T Tests
+
+Z and T tests are used to evaluate whether a given sample statistic (e.g., a mean or proportion) deviates significantly from what is expected under a null model or whether two samples statistics deviate significantly from one another.
+
+They are used for dealing with normally distributed, continuous variables or those that can be approximated closely by the normal distribution.
+
+-We REJECT a H0 if the p value obtained for a given Z or T test statistic is < α
+-CIs for our sample statistic are calculated as mean ± T(1−α/2) or Z(1−α/2) x SEM, and we can REJECT a H0 if the (1-α) CI around does not include the expected value of the statistic
+=When the sample size > 30, or when we are dealing with proportions, we use Z quantiles for calculating CIs and p values, but for sample size < 30, we use T quantiles
+
+See module for the various formulae for the tests
