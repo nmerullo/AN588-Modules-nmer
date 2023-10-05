@@ -74,7 +74,7 @@ mean(d$weight)
 ```
 
 **What is H0?** Vervet mean weights are the same (Vervet weights are not greater than 4.9)
-**What is HA?** Vervet mean weights are different (Vervet weights are great than 4.9)
+**What is HA?** Vervet mean weights are different (Vervet weights are greater than 4.9)
 Could be an upper tailed test or two tailed test (the latter more the way I described it, but if I had said vervet mean weights are greater this year as the HA then it would more be an upper tailed test)
 
 Mean, SD, SEM from Sample:
@@ -88,7 +88,7 @@ n <- length(x) #(number of vervets)
 sem <- s/sqrt(n) #how reliable is this sample data in representing the population
 ```
 
-Our test statistic takes a familiar form… it is effectively the standard normalized position of our sample mean in a distribution centered around the expected population mean.
+Our test statistic takes a familiar form… it is effectively the standard normalized position of our sample mean (5.3) in a distribution centered around the expected population mean (4.9).
 
 And the formula:
 Z = (mean of sample obs - expected mean) / (sample SD/sqrt # of sample obs)
@@ -195,7 +195,7 @@ test <- abs(t) > crit
 test
 ```
 
-Basically is the t value larger than value at tails where significance is reached. It is true so it is >0.05 thus not significant??
+True means it is signficiant.
 
 ```{r Challenge1-4}
 mu <- 7.2 #sample mean of lowland woolly monkeys
@@ -209,9 +209,9 @@ sem
 t.test(x=x, mu=mu, alternative = "two.sided")
 ```
 
-I got very different p values in my by hand version... this one is showing significance.
+I got very different p values in my original by hand version... this one is showing significance.
 
-Conflicting results, cannot decide on hypothesis. Cannot detemrine if these are a separate species or not.
+Conflicting results, cannot decide on hypothesis. Cannot determine if these are a separate species or not.
 
 ## Comparing Sample Means: Two Sample Z and T Tests
 
@@ -461,9 +461,9 @@ v <- c(0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0,
 Her netting success over the previous three seasons suggests that she should catch birds in 80% of her nets. This season, she feels, her success rate is lower than in previous years. Does her trapping data support this hypothesis?
 
 **What is H0?**
-Netting success is the same as last year
+Netting success is the same as last year at 80%
 **What is HA?**
-Netting success is lower than previous years
+Netting success is lower than 80%
 **Are both n×π and n×(1−π) > 5?**
 ```{r Challenge4-2}
 n <- length(v)

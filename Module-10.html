@@ -456,8 +456,8 @@ head(d)</code></pre>
 <pre><code>## [1] 5.323922</code></pre>
 <p><strong>What is H0?</strong> Vervet mean weights are the same (Vervet
 weights are not greater than 4.9) <strong>What is HA?</strong> Vervet
-mean weights are different (Vervet weights are great than 4.9) Could be
-an upper tailed test or two tailed test (the latter more the way I
+mean weights are different (Vervet weights are greater than 4.9) Could
+be an upper tailed test or two tailed test (the latter more the way I
 described it, but if I had said vervet mean weights are greater this
 year as the HA then it would more be an upper tailed test)</p>
 <p>Mean, SD, SEM from Sample:</p>
@@ -468,8 +468,8 @@ s &lt;- sd(x) #how much does the data (weights of vervets) vary from the mean
 n &lt;- length(x) #(number of vervets)
 sem &lt;- s/sqrt(n) #how reliable is this sample data in representing the population</code></pre>
 <p>Our test statistic takes a familiar form… it is effectively the
-standard normalized position of our sample mean in a distribution
-centered around the expected population mean.</p>
+standard normalized position of our sample mean (5.3) in a distribution
+centered around the expected population mean (4.9).</p>
 <p>And the formula: Z = (mean of sample obs - expected mean) / (sample
 SD/sqrt # of sample obs)</p>
 <pre class="r"><code>z &lt;- (m - mu)/sem
@@ -599,9 +599,7 @@ test &lt;- t &lt; -crit || t &gt; crit  # boolean test as to whether t is larger
 test &lt;- abs(t) &gt; crit
 test</code></pre>
 <pre><code>## [1] TRUE</code></pre>
-<p>Basically is the t value larger than value at tails where
-significance is reached. It is true so it is &gt;0.05 thus not
-significant??</p>
+<p>True means it is signficiant.</p>
 <pre class="r"><code>mu &lt;- 7.2 #sample mean of lowland woolly monkeys
 x &lt;- d$weight
 m &lt;- mean(x)
@@ -624,9 +622,9 @@ sem</code></pre>
 ## sample estimates:
 ## mean of x 
 ##  6.427333</code></pre>
-<p>I got very different p values in my by hand version… this one is
-showing significance.</p>
-<p>Conflicting results, cannot decide on hypothesis. Cannot detemrine if
+<p>I got very different p values in my original by hand version… this
+one is showing significance.</p>
+<p>Conflicting results, cannot decide on hypothesis. Cannot determine if
 these are a separate species or not.</p>
 </div>
 <div id="comparing-sample-means-two-sample-z-and-t-tests" class="section level2">
@@ -893,10 +891,10 @@ for (i in 1:1000) {
 }
 m &lt;- mean(x)
 m</code></pre>
-<pre><code>## [1] 0.4954</code></pre>
+<pre><code>## [1] 0.499</code></pre>
 <pre class="r"><code>s &lt;- sd(x)
 s</code></pre>
-<pre><code>## [1] 0.1553801</code></pre>
+<pre><code>## [1] 0.1552517</code></pre>
 <pre class="r"><code>pop_se &lt;- sqrt(pi * (1 - pi)/n)
 pop_se  # the se is an estimate of the sd of the sampling distribution</code></pre>
 <pre><code>## [1] 0.1581139</code></pre>
@@ -911,10 +909,10 @@ for (i in 1:1000) {
 }
 m &lt;- mean(x)
 m</code></pre>
-<pre><code>## [1] 0.197</code></pre>
+<pre><code>## [1] 0.2022</code></pre>
 <pre class="r"><code>s &lt;- sd(x)
 s</code></pre>
-<pre><code>## [1] 0.1258047</code></pre>
+<pre><code>## [1] 0.1259008</code></pre>
 <pre class="r"><code>pop_se &lt;- sqrt(pi * (1 - pi)/n)
 pop_se  # the se is an estimate of the sd of the sampling distribution</code></pre>
 <pre><code>## [1] 0.1264911</code></pre>
@@ -942,8 +940,8 @@ should catch birds in 80% of her nets. This season, she feels, her
 success rate is lower than in previous years. Does her trapping data
 support this hypothesis?</p>
 <p><strong>What is H0?</strong> Netting success is the same as last year
-<strong>What is HA?</strong> Netting success is lower than previous
-years <strong>Are both n×π and n×(1−π) &gt; 5?</strong></p>
+at 80% <strong>What is HA?</strong> Netting success is lower than 80%
+<strong>Are both n×π and n×(1−π) &gt; 5?</strong></p>
 <pre class="r"><code>n &lt;- length(v)
 pi &lt;- 0.8 #success rate of birds in nests
 n*pi</code></pre>

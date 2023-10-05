@@ -16,8 +16,7 @@ library(curl)
 
 The general way to define a confidence interval based on data from a sample is as the value of the statistic being considered (e.g., the mean) ± some critical value × the standard error of the statistic.
 
-The critical value is derived from the standardized version of a sampling distribution (e.g., the normal distribution) that corresponds the quantile limits we are interested in. For example, for the 95% CI around the mean, the critical value corresponds the range of quantiles above and below which we expect to see only 5% of the distribution of statistic values. This is equivalent to the ± 1 - (α
-/2) quantiles, where α=0.05, i.e., the ± 0.975 quantile that we have used before for calculating 95% CIs.
+The critical value is derived from the standardized version of a sampling distribution (e.g., the normal distribution) that corresponds the quantile limits we are interested in. For example, for the 95% CI around the mean, the critical value corresponds the range of quantiles above and below which we expect to see only 5% of the distribution of statistic values. This is equivalent to the ± 1 - (α/2) quantiles, where α=0.05, i.e., the ± 0.975 quantile that we have used before for calculating 95% CIs.
 
 **must use qnorm because it tells you the value x at a certain probability*
 
@@ -50,15 +49,9 @@ Thus far, our construction of CIs has implicitly taken advantage of one of the m
 
 But we can nonetheless assume normality for the distribution of sample mean (or of the sum or mode, etc…) no matter what kind of probability distribution characterizes the initial population, as long as our sample size is large enough and our samples are independent. It is thus the CLT that allows us to make inferences about a population based on a sample.
 
-Just to explore this a bit, let’s do some simulations. We are going to take lots of averages of samples from a particular non-normal distribution and then look at the distribution of those averages. Imagine we have some event that occurs in a population according to some probability mass function like the Poisson where we know λ
-=14. Recall, then, that the expectations of μ
- and σ2
- for the Poisson distribution are both=λ
-.
+Just to explore this a bit, let’s do some simulations. We are going to take lots of averages of samples from a particular non-normal distribution and then look at the distribution of those averages. Imagine we have some event that occurs in a population according to some probability mass function like the Poisson where we know λ=14. Recall, then, that the expectations of μ and σ2 for the Poisson distribution are both=λ.
 
-Now let’s imagine taking a bunch of samples of size 10 from this population. We will take 1000 random samples of this size, calculate the average of each sample, and plot a histogram of those averages… it will be close to normal, and the standard deviation of the those average - i.e., of the sampling distribution - should be roughly equal to the estimated standard error, the square root of (λ/n)
-. [Recall that λ
- is the expected variance, so this is simply the square root of (expected variance / sample size)]
+Now let’s imagine taking a bunch of samples of size 10 from this population. We will take 1000 random samples of this size, calculate the average of each sample, and plot a histogram of those averages… it will be close to normal, and the standard deviation of the those average - i.e., of the sampling distribution - should be roughly equal to the estimated standard error, the square root of (λ/n). [Recall that λ is the expected variance, so this is simply the square root of (expected variance / sample size)]
  
 ```{r CLM-1}
 lambda <- 14
@@ -78,6 +71,7 @@ sd
 qqnorm(x)
 qqline(x)
 ```
+They start to look normal even though it is not a normal distribution!
 
 Sampling 10 is representative of the 1000 population
 what if it is 100 out of the 1000
@@ -129,6 +123,8 @@ Additionally, it suggests that variables that are expected to be the sum of mult
 
 [2] Taking the mean and adding and subtracting the relevant standard normal quantile ×
  the standard error yields a confidence interval for the mean, which gets wider as the coverage increases and gets narrower with less variability or larger sample sizes.
+CI get fat with less certainty or low sample size or high variance
+CI gets narrow with more certainty or high sample size or low variance
 
 [3] As sample size increases, the standard error of the mean decreases and the distribution becomes more and more normal (i.e., has less skew and kurtosis, which are higher order moments of the distribution).
 
@@ -147,13 +143,15 @@ Note: this expectation based on an approximation of the normal holds true only i
 
 ## Challenge
 
-Suppose a polling group in the Massachusetts is interested in the proportion of voting-age citizens in their state that already know they will vote for Elizabeth Warren in the upcoming November 5, 2024 general elections (don’t forget to vote!). The group obtains a yes or no answer from 1000 suitable randomly selected individuals. Of these individuals, 856 say they know they’ll vote for Senator Warren. How would we characterize the mean and variability associated with this proportion?
+Suppose a polling group in Massachusetts is interested in the proportion of voting-age citizens in their state that already know they will vote for Elizabeth Warren in the upcoming November 5, 2024 general elections. The group obtains a yes or no answer from 1000 suitable randomly selected individuals. Of these individuals, 856 say they know they’ll vote for Senator Warren. How would we characterize the mean and variability associated with this proportion?
+
+How do we know that this is a reliable indicator for all of massachusetts?
 
 Mean (pi)
 ```{r challenge-1}
 n <- 1000
 x <- 856
-phat <- x/n  # our estimate of pi (voters out of sampled group saying they will vote for Liz)
+phat <- x/n  # our estimate of pi (voters out of sampled group saying they will vote for Liz) or expectation proportion
 phat
 ```
 
@@ -233,6 +231,10 @@ for (i in c(1, 2, 3, 4, 5, 10, 20, 100)) {
 }
 ```
 
+**There is lower probability compared to the normal at the mean but greater probability at the tails relatively**
+
+**greater scatter**
+
 The fatter tails of the t distribution lead naturally to more extreme quantile values given a specific probability than we would see for the normal distribution. If we define a CI based on quantiles of the t distribution, they will be correspondingly slightly wider than those based on the normal distribution for small values of df.
 
 We can see this as follows. Recall that above we estimated the 95% CI for a sample drawn from a normal distribution as follows:
@@ -260,7 +262,7 @@ Now with t Distribution
 
 ```{r TDist-3}
 lower <- m - qt(1 - 0.05/2, df = sample_size - 1) * SEM  # (1-alpha)/2 each in the upper and lower tails of the distribution
-upper <- m + qt(1 - 0.05/2, df = sample_size - 1) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- m + qt(1 - 0.05/2, df = sample_size - 1) * SEM  # (1-alpha)/2 each in the upper and lower tails of the distribution
 ci_t <- c(lower, upper)
 ci_t
 ```
