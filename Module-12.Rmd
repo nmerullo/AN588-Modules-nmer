@@ -1,0 +1,179 @@
+---
+title: "Module-12"
+author: "Nicole Merullo"
+date: "2023-10-12"
+output: html_document
+---
+#Introduction to Linear Regression
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(curl)
+library(lmodel2)
+library(gridExtra)
+```
+
+## Covariance and Correlation
+
+So far, we have looked principally at single variables, but one of the main things we are often interested in is the relationships among two or more variables. Regression modeling is one of the most powerful and important set of tools for looking at relationships among more than one variable. With our zombie apocalypse survivor dataset, we started to do this using simple bivariate scatterplots… let’s look at those data again and do a simple bivariate plot of height by weight.
+
+```{r}
+library(ggplot2)
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/zombies.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+plot(data = d, height ~ weight)
+```
+
+These variables clearly seem to be related to one another, in that as weight increases, height increases. There are a couple of different ways we can quantify the relationship between these variables. One is the covariance, which expresses how much two numeric variables “change together” and whether that change is positive or negative.
+
+Recall that the variance in a variable is simply the sum of the squared deviaiations of each observation from the mean divided by sample size (n for population variance or n-1 for sample variance).
+
+var(x)= sum of (x - mean of x squared / n -1) where x is a sample
+
+Similarly, the covariance is simply the product of the deviations of each of two variables from their respective means divided by sample size. So, for two vectors, x and y, each of length n representing two variables describing a sample…
+
+cov(x,y) = sum of (x - mean of x) squared(y - mean of y) squared / n - 1
+
+## Challenge 1
+
+What is the covariance between zombie survivor weight and zombie survivor height? What does it mean if the covariance is positive versus negative? Does it matter if you switch the order of the two variables?
+
+```{r Challenge1-1}
+w <- d$weight
+h <- d$height
+n <- length(w)  # or length(h)
+cov_wh <- sum((w - mean(w)) * (h - mean(h)))/(n - 1)
+cov_wh
+```
+
+The built-in R function cov() yields the same.
+
+```{r Challenge1-2}
+cov(w, h)
+```
+
+We often describe the relationship between two variables using the **correlation** coefficient, which is a standardized form of the covariance, which summarizes on a standard scale, -1 to +1, both the strength and direction of a relationship. The correlation is simply the covariance divided by the product of the standard deviation of both variables.
+
+cov(x,y) = cov(x,y) / sd(x)sd(y)
+
+When we divide the covariance by how much scatter there is we get correlation
+
+## Challenge 2
+
+Calculate the correlation between zombie survivor height and weight.
+
+```{r cor-1}
+sd_w <- sd(w)
+sd_h <- sd(h)
+cor_wh <- cov_wh/(sd_w * sd_h)
+cor_wh
+```
+
+```{r cor-2}
+cor(w, h)
+```
+
+```{r cor-3}
+cor(w, h, method = "pearson")
+cor(w, h, method = "spearman")
+cor(w, h, method = "kendall")
+```
+
+This formulation of the correlation coefficient is referred to as Pearson’s product-moment correlation coefficient and is often abbreviated as ρ.
+
+There are other, nonparametric forms of the correlation coefficient we might also calculate, in the case that our data do not follow the assumptions of a normal distribution. Spearman’s rank-order correlation coefficient (r) is the most common, and roughly approximate’s Pearson’s ρ, but there are others (like Kendall’s τ, which is also fairly common):
+
+## Regression
+
+Correlation tells us how much they are related to each other
+
+Regression is the set of tools that lets us explore the relationships between variables further. In regression analysis, we are typically identifying and exploring linear models, or functions, that describe the relationship between variables. There are a couple of main purposes for undertaking regression analyses:
+
+-To use one or more variables to predict the value of another
+-To develop and choose among different models of the relationship between variables
+-To do analyses of covariation among sets of variables to identify their relative explanatory power
+
+The general purpose of linear regression is to come up with a model or function that estimates the mean value of one variable, i.e., the response or outcome variable, given the particular value(s) of another variable or set of variables, i.e., the predictor variable(s).
+
+We’re going to start off with simple bivariate regression, where we have a single predictor and a single response variable. In our case, we may be interested in coming up with a linear model that estimates the mean value for zombie height (as the response variable) given zombie weight (as the predictor variable). That is, we want to explore functions that link these two variables and choose the best one.
+
+In general, the model for linear regression represents a dependent (or response) variable, Y as a linear function of the independent (or predictor) variable, X.
+
+Y=β0+β1Xi+ϵi
+
+The function has two coefficients. The first β0 is the intercept, the value of Y when X = 0. The second β1 is the slope of the line. The error term, ϵi is a normal random variable, ϵi∼N(0,σ2) with the standard deviation assumed to be constant across all values of X.
+
+A regression analysis calls for estimating the values of all three parameters (β0, β1, and the residuals or error term). How this is accomplished will depend on what assumptions are employed in the analysis. The regression model posits that X is the cause of Y.
+
+Looking at our scatterplot above, it seems pretty clear that there is indeed some linear relationship among these variables, and so a reasonable function to connect height to weight should simply be some kind of line of best fit. Recall that the general formula for a line is:
+
+yhat - slope * x + intercept
+
+where yhat = our predicted y given a value of x
+
+In regression parlance…
+
+yhat = beta1x _ beta0
+
+[see equation 20.2 in The Book of R]
+
+Here, β1 and β0 are referred to as the regression coefficients, and it is those that our regression analysis is trying to estimate, while minimizing, according to some criterion, the error term. This process of estimation is called “fitting the model.”
+
+A typical linear regression analysis further assumes that X, our “independent” variable, is controlled and thus measured with much greater precision than Y, our “dependent” variable. Thus the error, ϵi is assumed to be restricted to the Y dimension, with little or no error in measuring X, and we employ “ordinary least squares” as our criterion for best fit.
+
+What does this mean? Well, we can imagine a family of lines of different β1 and β0 going through this cloud of points, and the best fit criterion we use is to find the line whose coefficients minimize the sum of the squared deviations of each observation in the Y direction from that predicted by the line. This is the basis of ordinary least squares or OLS regression. We want to wind up with an equation that tells us how Y varies in response to changes in X.
+
+So, we want to find β1 and β0 that minimizes…
+
+sum of y - yhat squared
+
+or
+
+sum of (y - (b1x + b0))squared
+
+in our variables this is
+
+sum of (height - (beta1weight + beta0))squared
+
+Let’s fit the model by hand… The first thing to do is estimate the slope, which we can do if we first “center” each of our variables by subtracting the mean from each value (this shifts the distribution to eliminate the intercept term).
+
+Our model is the best guess at the relationship between the data, so the deviations are the residuals. Want to reduce as much as possible the residuals so the line best descirbes the relationship between the points.
+
+Assumption 1: X is the cause of Y
+Assumption 2: X is controlled and thus measured with greater precision than Y, the dependent variable, so we only incorporate error on the Y axis
+
+```{r reg-1}
+y <- h - mean(h)
+x <- w - mean(w)
+z <- data.frame(cbind(x, y)) #making a data frame with x and y as columns
+g <- ggplot(data = z, aes(x = x, y = y)) + geom_point()
+g
+```
+
+```{r reg-2}
+slope.test <- function(beta1) {
+    g <- ggplot(data = z, aes(x = x, y = y))
+    g <- g + geom_point()
+    g <- g + geom_abline(intercept = 0, slope = beta1, size = 1, colour = "blue",
+        alpha = 1/2)
+    ols <- sum((y - beta1 * x)^2)
+    g <- g + ggtitle(paste("Slope = ", beta1, "\nSum of Squared Deviations = ",
+        round(ols, 3)))
+    g
+}
+```
+
+```{r reg-3, eval=FALSE}
+manipulate(plot(1:5, cex = size), size = slider(0.5, 10, step = 0.5))  #priming the interface
+manipulate(slope.test(beta1), beta1 = slider(-1, 1, initial = 0, step = 0.005))  #here we go!
+```
+
+```{r reg-4}
+beta1 <- cor(w, h) * (sd(h)/sd(w))
+beta1
+beta1 <- cov(w, h)/var(w)
+beta1
+beta1 <- sum((h - mean(h)) * (w - mean(w)))/sum((w - mean(w))^2)
+beta1
+```
