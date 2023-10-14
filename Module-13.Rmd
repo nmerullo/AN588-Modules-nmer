@@ -1,0 +1,14 @@
+---
+title: "Module-13"
+author: "Nicole Merullo"
+date: "2023-10-14"
+output: html_document
+---
+# Elements of Regression Analysis
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(curl)
+```
+
+**instructions copied from module instructions with notes**
