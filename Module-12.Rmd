@@ -272,9 +272,10 @@ m
 H ~ M
 
 ```{r Challenge3-5}
-#library(dplyr)
-#males <- filter(d, gender == "Male")
-#plot(data = d, height ~ gender)
+#Hmales <- d$height[filter(d, gender == "Male")]
+#Amales <- d$age["Male"]
+#Hmales
+#plot(x = d$age["Male"], y = d$height["Male"])
 ```
 
 ## Statistical Inference in Regression
