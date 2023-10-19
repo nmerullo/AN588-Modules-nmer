@@ -5,12 +5,16 @@ date: "2023-10-12"
 output: html_document
 ---
 # Introduction to Linear Regression
+Module instructions pasted in with personal notes and notes from class
+
+If a relationship between x (predictor variable) and y (the dependent variable or response variable) is 1:1 then all the data would fall on the line. Because they're not, we are finding the residuals, the amount of space between the data points and the line
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(curl)
 library(lmodel2)
 library(gridExtra)
+library(manipulate)
 ```
 
 ## Covariance and Correlation
@@ -112,6 +116,8 @@ yhat - slope * x + intercept
 
 where yhat = our predicted y given a value of x
 
+slope is how x covries with y
+
 In regression parlance…
 
 yhat = beta1x _ beta0
@@ -150,6 +156,7 @@ z <- data.frame(cbind(x, y)) #making a data frame with x and y as columns
 g <- ggplot(data = z, aes(x = x, y = y)) + geom_point()
 g
 ```
+Now we just need to minimize the sum of y centered - B1Xcentered squared
 
 ```{r reg-2}
 slope.test <- function(beta1) {
@@ -168,6 +175,9 @@ slope.test <- function(beta1) {
 manipulate(plot(1:5, cex = size), size = slider(0.5, 10, step = 0.5))  #priming the interface
 manipulate(slope.test(beta1), beta1 = slider(-1, 1, initial = 0, step = 0.005))  #here we go!
 ```
+The process of running a regression is finding a line that fits the data and minimizes the sum of squared deviations
+
+Analytically this is what this looks like: 
 
 ```{r reg-4}
 beta1 <- cor(w, h) * (sd(h)/sd(w))
@@ -178,9 +188,9 @@ beta1 <- sum((h - mean(h)) * (w - mean(w)))/sum((w - mean(w))^2)
 beta1
 ```
 
-To find β0, we can simply plug back into our original regression model. The line of best fit has to run through the centroid of our data points, which is the point determined by the mean of the x values and the mean of the y values, so we can use the following:
+To find β0 (intercept), we can simply plug back into our original regression model. The line of best fit has to run through the centroid of our data points, which is the point determined by the mean of the x values and the mean of the y values, so we can use the following:
 
-expectedY= B1expectedX + B0
+expectedY = B1expectedX + B0
 
 which, rearranged to solve for β0 gives…
 
@@ -191,7 +201,9 @@ beta0 <- mean(h) - beta1 * mean(w)
 beta0
 ```
 
-Note that in the example above, we have taken our least squares criterion to mean minimizing the deviation of each of our Y variables from a line of best fit in a dimension perpendicular to the Y axis. In general, this kind of regression, where deviation is measured perpendicular to one of the axes, is known as Model I regression, and is used when the levels of the predictor variable are either measured without error (or, practically speaking, are measured with much less uncertainty than those of the response variable) or are set by the researcher (e.g., for defined treatment variables in an ecological experiment).
+Note that in the example above, we have taken our least squares criterion to mean minimizing the deviation of each of our Y variables from a line of best fit in a dimension perpendicular to the Y axis. In general, this kind of regression, where deviation is measured perpendicular to one of the axes, is known as **Model I regression**, and is used when the levels of the predictor variable are either measured without error (or, practically speaking, are measured with much less uncertainty than those of the response variable) or are set by the researcher (e.g., for defined treatment variables in an ecological experiment).
+
+We are only accounting for error on one axis, assuming that x has no error or just practically has less certainty
 
 ## The lm() Function
 
@@ -205,7 +217,9 @@ m$coefficients
 head(m$model)
 ```
 
-In {ggplot}, we can easily create a plot that adds the linear model along with confidence intervals around the estimated value of y, or  at each x. Those intervals are important for when we move on to talking about inference in the regression context.
+In {ggplot}, we can easily create a plot that adds the linear model along with confidence intervals around the estimated value of y, or yhat at each x. Those intervals are important for when we move on to talking about inference in the regression context.
+
+The tighter of the CI shadow around the lm line, the better of an idea we have of what's going on
 
 ```{r lm-2}
 g <- ggplot(data = d, aes(x = weight, y = height))
@@ -216,7 +230,15 @@ g
 
 The assumption of greater uncertainty in our response variable than in our predictor variable may be reasonable in controlled experiments, but for natural observations, measurement of the X variable also typically involves some error and, in fact, in many cases we may not be concered about PREDICTING Y from X but rather want to treat both X and Y as independent variables and explore the relationship between them or consider that both are dependent on some additional parameter, which may be unknown. That is, both are measured rather than “controlled” and both include uncertainty. We thus are not seeking an equation of how Y varies with changes in X, but rather we are look for how they both co-vary in response to some other variable or process. Under these conditions Model II regression analysis may be more appropriate. In Model II approaches, a line of best fit is chosen that minimizes in some way the direct distance of each point to the best fit line. There are several different types of Model II regression, and which to use depends upon the specifics of the case. Common approaches are know as major axis, ranged major axis, and reduced major axis (a.k.a. standard major axis) regression.
 
+Model II example: measuring two bones like a humerus and a femur. One of them is not going to have more or less error than the other
+
 The {lmodel2} package allows us to do Model II regression easily (as well as Model I). In this package, the significance of the regression coefficients is determined based on permutation.
+
+OLS is ordinary least squares
+MA is major access
+RMA is reduced major access
+SMA is standard major access
+these different lines are making slightly different assumptions about these data
 
 ```{r lm-3}
 # Run the regression
@@ -228,6 +250,7 @@ plot(mII, "RMA")
 plot(mII, "SMA")
 plot(mII, "MA")
 ```
+r is the correlation coefficient. r-square means that our model accounts for 69% of error
 
 Note that, here, running lmodel2() and using OLS to detemine the best coefficients yields equivalent results to our Model I regression done above using lm().
 
@@ -288,6 +311,7 @@ The output of the lm() function provides a lot of information useful for inferen
 m <- lm(data = d, height ~ weight)
 summary(m)
 ```
+Is this model appropriate for our dataset? F-statistic gives us a pvalue that tells us this. The smaller it is, the better it is.
 
 One of the outputs for the model, seen in the 2nd to last line in the output above, is the “R-squared” value, or the coefficient of determination, which is a summary of the total amount of variation in the y variable that is explained by the x variable. In our regression, ~69% of the variation in zombie height is explained by zombie weight.
 
@@ -433,8 +457,12 @@ grid.arrange(g1, g2, ncol = 2)
 
 Again, here the CI band shows where the mean height is expected to fall in 95% of samples and the PI band shows where the individual points are expected to fall 95% of the time.
 
+Given a value of x, what are the values of y you could get 95% of the time
+
 ## Residuals
 
 From our various plots above, it’s clear that our model is not explaining all of the variation we see in our dataset… our y points do not all fall on the yhat line but rather are distributed around it. The distance of each of these points from the predicted value for y at that value of x is known as the “residual”. We can think about the residuals as “what is left over”” after accounting for the predicted relationship between x and y. Residuals are often thought of as estimates of the “error” term in a regression model, and most regression analyses assume that residuals are random normal variables with uniform variance across the range of x values (more on this in the coming modules). In ordinary least squares regression, the line of best fit minimizes the sum of the squared residuals, and the expected value for a residual is 0.
 
 Residuals are also used to create “covariate adjusted” variables, as they can be thought of as the response variable, y, with the linear effect of the predictor variable(s) removed. We’ll return to this idea when we move on to multivariate regression.
+
+Residuals should be a random cloud. If there is a structure to your residuals then you need a better model.
