@@ -1,0 +1,18 @@
+---
+title: "Module-14"
+author: "Nicole Merullo"
+date: "2023-10-26"
+output: html_document
+---
+#Basic Categorial Data Analysis and Anova
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(curl)
+library(ggplot2)
+library(dplyr)
+library(car)
+```
+
+## Categorical Predictors in Regression
+
+Thus far we have used simple linear regression models involving continuous explanatory variables, but we can also use a discrete or categorical explanatory variable, made up of 2 or more groups that are coded as “factors” (i.e., we use integer values from 1 to k discrete groups as dummy values for our categorical variables). Let’s load in our zombie survivor data again, but this time we specify stringsAsFactors = TRUE and then look at the class of the variable “gender”
