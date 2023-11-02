@@ -148,6 +148,7 @@ The higher the r squared (closer to 1) the better the fit of the linear model
 You might have the best fit possible for your data, but that doesn't mean it is a good model period, and that's how you use the r squared.
 The intercept is the value of y when x = 0
 F-statistic - is this adequately describing this relationship? P value is very low. If it wasn't significant, then the model is not soaking up enough variation
+
 ## Model Checking
 
 So far, we’ve derived a bunch of summary statistics describing our model and we’ve looked at ways of testing whether those summary statistics are significantly different from zero. That is…
