@@ -47,6 +47,7 @@ We will start by constructing a dataset ourselves of some correlated random norm
 ```{r}
 R = matrix(cbind(1, 0.8, -0.5, 0, 0.8, 1, -0.3, 0.3, -0.5, -0.3, 1, 0.6, 0,
     0.3, 0.6, 1), nrow = 4)
+R
 ```
 
 NOTE TO SELF: This will be helpful for data replication assignment I think

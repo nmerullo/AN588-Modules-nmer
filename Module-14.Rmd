@@ -30,7 +30,7 @@ As with our prior simple regression analysis, we want to evalute the effect of a
 plot(z$height ~ z$gender)
 ```
 
-This immediately gives us a nice barplot. Note that if we’d try to use this command after loading in “gender” as character rather than factor data, R would have thrown an error. Always make sure your variables are in the right format!
+**This immediately gives us a nice boxplot.** Note that if we’d try to use this command after loading in “gender” as character rather than factor data, R would have thrown an error. Always make sure your variables are in the right format!
 
 Based on our plot, there indeed seems to be a difference in height between genders, with males appearing taller, non-binary folks of middling height, and females at the shorter end of the distribution. We can test this directly using linear regression (and, recall, we already know another way to test this, using z or t tests to compare means).
 
@@ -38,6 +38,7 @@ Based on our plot, there indeed seems to be a difference in height between gende
 m <- lm(data = z, height ~ gender)
 summary(m)
 ```
+r squared value - our model/height is only explaining 21% of the variance
 
 If we take a look at the summary() of our model, m, we see the same kind of table of results we have seen before, but because the predictor variable in this case is a factor vector instead of a numeric vector, the coefficients are reported and interpreted a bit differently. The coefficient for the intercept, i.e., β0, reflects the estimate of the mean height for the first of our level variables (in this case, Female).
 
@@ -58,7 +59,8 @@ z$gender <- relevel(z$gender, ref = "Male")
 m <- lm(data = z, height ~ gender)
 summary(m)
 ```
-
+ Last column of the coefficients shows that female height is significantly different from male, but nonbinary is not
+ 
 The last line of the summary() output shows the results of the global test of significance of the regression model based on an F statistic compared to an F distribution with, in this case, 1 and 998 degrees of freedom.
 
 ```{r}
@@ -92,6 +94,7 @@ levels(z$occupation)
 z$occupation <- relevel(z$occupation, ref = "natural science")
 levels(z$occupation)
 ```
+This is called binning- putting the 26 different majors into 4 categories
 
 Again, we can plot our variable by group and run a multilevel linear regression. Each β estimate reflects the difference from the estimated mean for the reference level. The lm() function also returns the results of the global significance test of our model.
 
@@ -105,6 +108,7 @@ summary(m)
 p <- 1 - pf(0.526, df1 = 3, df2 = 996)  # F test
 p
 ```
+No huge differences in zombie killing abilites. Not significant. 
 
 In this case, we see no significant effect of major on zombie killing proficiency.
 
@@ -122,6 +126,8 @@ plot(m)
 ```
 
 The summary of the lm() model produces a different table for the same analysis. It shows the effect sizes for each coefficient and their standard errors, whereas the F statistic and omnibus p value given in the ANOVA table indicates that there are differences between at least some treatments, but we do not know where those differences occur. The summary from lm() shows the effects arranged as sequential contrasts (the default in R). The first row gives the mean of the first level of the first factor specified in the model. The following rows give differences from this mean for each subsequent factor level. Likewise the standard error in the first row is a standard error of a mean, while the entries in subsequent rows are standard errors of the differences between two means.
+
+If height different across genders? Null would be the same. Is zombies killed different across occupations?
 
 In general, in ANOVA and simple regression using a single categorical variable, we aim to test the H0 that the means of a variable of interest do not differ among groups, i.e., that μ1 = μ2… μk are all equal. This is an extension of our comparison of two means that we did with z and t tests.
 
@@ -149,7 +155,7 @@ Our experiment/observations have a balanced design (i.e., an equal number of cas
 
 ## Challenge 1
 
-Load in the “gibbon-femurs.csv” dataset, which contains the lengths, in centimeters, of the femurs of 400 juvenile, subadult, and adult individuals gibbons. Use both ANOVA and simple linear regession to examine the relationship between age and femur length. Before beginning, make sure that you check for normality of observations within each group.
+Load in the “gibbon-femurs.csv” dataset, which contains the lengths, in centimeters, of the femora of 400 juvenile, subadult, and adult individuals gibbons. Use both ANOVA and simple linear regession to examine the relationship between age and femur length. Before beginning, make sure that you check for normality of observations within each group.
 
 Is the omnibus test of the relationship between age category and femur length significant? Are femur lengths significantly different for juveniles versus subadults? Subadults versus adults? Juveniles versus adults? HINT: to test these bivariate options, you will need to relevel() your factors for simple linear regression.
 
@@ -171,6 +177,8 @@ max(sds$`sd(femur.length)`)/min(sds$`sd(femur.length)`)  # check that variances 
 means.centered <- d$femur.length - means[as.numeric(d$age), 2]  # subtract relevant group mean from each data point
 qqnorm(means.centered$`mean(femur.length)`)  # graphical tests for normality
 ```
+
+Only care about normality within the age categoies- data can be non normal across all age stages
 
 ```{r}
 par(mfrow = c(2, 2))
@@ -200,6 +208,9 @@ summary(m)
 m <- lm(data = d, femur.length ~ age)
 summary(m)
 ```
+R-squared value is showing that age categories are explaining femur length
+F statistic is very signficant so there are signficcant differences in femur lengths
+Each of those Pr coefficients are just getting compared to infant not to each other.
 
 ## Post-Hoc Tests and the Non-Parametric Kruskal-Wallis Test
 After finding a significant omnibus F statistic in an ANOVA, we can test, post-hoc, what group means are different from one another using pairwise t tests with appropriate p value correction.
@@ -328,6 +339,7 @@ However, if we do a two-way ANOVA and consider the factors together, we see that
 m <- summary(aov(data = d, femur.length ~ age + sex))
 m
 ```
+They are controlling for each other - age controlling for sex and sex controlling for age and they are each significant
 
 To examine whether there is an interaction effect, we would modify our model formula a bit…
 
@@ -335,6 +347,7 @@ To examine whether there is an interaction effect, we would modify our model for
 m <- aov(data = d, femur.length ~ age + sex + age:sex)  # : operator includes specific interaction terms
 summary(m)
 ```
+Significant interaction effect
 
 We could also use…
 
@@ -383,6 +396,9 @@ We can see the unbalanced design by tabulating the cases for each combination of
 ```{r}
 table(d$sex, d$age)
 ```
+
+**Whatever you enter firstt is soaking up the most variance**
+
 Recall that ANOVA is based on splitting up the sums of squares, so that for a model like:
 
 Yijk = mu + ai + bj + a*bi,j + epslioni,j,k
@@ -417,7 +433,7 @@ We can use the Anova() function in the {car} package to run ANOVA with Type II a
 m1 <- aov(data = d, femur.length ~ age + sex)
 m1 <- Anova(m1, type = "II")
 m1
-m1 <- aov(data = d, femur.length ~ sex + age)
+m2 <- aov(data = d, femur.length ~ sex + age)
 m2 <- Anova(m2, type = "II")
 m2
 ```
@@ -435,7 +451,7 @@ m2
 
 One additional type of categorical data we will often encounter are counts of observations that fall into two or more categories (when we were dealing with Z tests for proportion data, we were interested in something similar, though with two categories only). We can use Chi-Square tests to evaluate statistically the distribution of observations across levels of one or more categorical variables.
 
-See module for formuala for chi square statistic
+See module for formula for chi square statistic
 
 We then compare the value of the χ2 statistic to the Chi-Square distribution with k−1 degrees of freedom.
 
@@ -458,6 +474,8 @@ p
 ```
 
 Here, we reject the null hypothesis that the proportions of different occupations among the survivors of the zombie apocalypse is equivalent.
+
+The proportion of survivors is different from equal survivorship across all occupations
 
 We can do all this with a 1-liner in R, too.
 
