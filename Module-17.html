@@ -416,7 +416,7 @@ mean value of Y.</p>
 <p>The logit link, which is log(π/(1-π)), and is typically used for
 binary data and logistic regression.</p>
 <p><em>Error-Canonical Link</em> Gaussian-Identity Poisson-log
-Bionmial-logit Gamma-reciprocal</p>
+Binomial-logit Gamma-reciprocal</p>
 <p>General linear regression can be viewed as a special case of GLM,
 where the random component of our model has a normal distribution and
 the link function is the identity link so that we are modeling an
@@ -430,12 +430,12 @@ determine the fit of a given model, a GLM evaluates the linear predictor
 for each value of the response variable, then back-transforms the
 predicted value into the scale of the Y variable using the inverse of
 the link function. These predicted values are compared with the observed
-values of Y . The parameters are then adjusted, and the model is
-refitted on the transformed scale in an iterative procedure until the
-fit stops improving. In ML approaches, then, the data are taken as a
-given, and we are trying to find the most likely model to fit those
-data. We judge the fit of the model of the basis of how likely the data
-would be if the model were correct.</p>
+values of Y. The parameters are then adjusted, and the model is refitted
+on the transformed scale in an iterative procedure until the fit stops
+improving. In ML approaches, then, the data are taken as a given, and we
+are trying to find the most likely model to fit those data. We judge the
+fit of the model of the basis of how likely the data would be if the
+model were correct.</p>
 <p>The measure of discrepancy used in a GLM to assess the goodness of
 fit of the model to the data is called the deviance, which we can think
 of as analogous to the variance in a general linear model. Deviance is
@@ -552,6 +552,9 @@ summary(glm)</code></pre>
 ## AIC: 490.06
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
+<p>GRE scores significantly predictive of getting into grad school. The
+odds of getting into getting into grad school increase by .0035 units
+for every unit of increase in change in GRE.</p>
 <p>Here is the equation representing the results of our model: logit(πi)
 = -2.901344 + 0.003582 * gre</p>
 </div>
@@ -559,7 +562,7 @@ summary(glm)</code></pre>
 <h3>Interpretation and Hypothesis Testing in Logistic Regression</h3>
 <p>When we get a β1 estimate from a logistic regression, it represents
 the change in the log(odds ratio) of the outcome for an increase in one
-unit of X .</p>
+unit of X.</p>
 <p>Looking at the coefficient for gre, we see it is positive and, while
 low, is significantly different from 0. Thus, increasing GRE score
 results in an increase in the log(odds ratio) of admission (i.e.,
@@ -900,6 +903,9 @@ summary(glmGGR)</code></pre>
 ## AIC: 470.52
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
+<p>Each drop in rank means less likelihood of getting admitted and it
+gets more significant Lower AIC so this model is better at explaining
+admittance</p>
 <pre class="r"><code>coeff &lt;- glmGGR$coefficients  # extract coefficients... all significantly different from 0
 coeffCI &lt;- cbind(coeff, confint(glmGGR))  # and 95% CIs around them... none include 0</code></pre>
 <pre><code>## Waiting for profiling to be done...</code></pre>
@@ -968,6 +974,7 @@ anova(glmNO, glmALL, test = &quot;Chisq&quot;)  # adding interaction terms to mo
 ##   Resid. Df Resid. Dev Df Deviance Pr(&gt;Chi)
 ## 1       394     458.52                     
 ## 2       384     450.39 10   8.1317    0.616</code></pre>
+<p>Interaction effects don’t matter</p>
 </div>
 <div id="log-linear-or-poisson-regression" class="section level2">
 <h2>Log-Linear or Poisson Regression</h2>

@@ -74,8 +74,16 @@ summary(m0)
 ```{r}
 add1(m0, scope = . ~ . + age + weight + zombies_killed + years_of_education,
     test = "F")
+```
+For AIC, the smallest number imples the best model. So height ~ weight is our best model.
+
+```{r}
 m2 <- update(m1, formula = . ~ . + age)
 summary(m2)
+```
+
+
+```{r}
 add1(m2, scope = . ~ . + age + weight + zombies_killed + years_of_education,
     test = "F")
 ```
@@ -85,10 +93,13 @@ After we add weight and age, no other variable improves the fit of the model sig
 ```{r}
 summary(m2)
 ```
+Height is explained by wegiht + age
 
 ### Backward Selection
 
 Opposite to forward selection, backward selection starts with the fullest model you want to consider and systematically drops terms that do not contribute to the explanatory value of the model. The R functions for this process are drop1() to inspect the partial F test results and update() to update the model.
+
+We are starting with every covariate we think matters, that we think explains the Y.
 
 ```{r}
 m0 <- lm(data = z, height ~ age + weight + zombies_killed + years_of_education)
@@ -103,7 +114,7 @@ drop1(m0, test = "F")
 m1 <- update(m0, . ~ . - years_of_education)
 summary(m1)
 ```
-
+Zombies killed not significnat so we can drop that
 ```{r}
 drop1(m1, test = "F")
 ```
@@ -122,9 +133,9 @@ At this point, all of the explanatory variables are still significant, so the fi
 ```{r}
 summary(m2)
 ```
+Height explained by asge and weight, just like forward selection showed. This may not always the case though.
 
-
-### Model Selection Using A/C
+### Model Selection Using AIC
 
 Now, there are two R functions that can act as further shortcuts for this process that use the Akaike Information Criterion (AIC) rather than the partial F-test to determine relative model fit. We’ll talk in more detail about how we get AIC in Module 17.
 

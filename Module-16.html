@@ -487,6 +487,8 @@ summary(m0)</code></pre>
 ## years_of_education  1      81.6 18477.0 2920.5    4.4057 0.03607 *  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>For AIC, the smallest number imples the best model. So height ~
+weight is our best model.</p>
 <pre class="r"><code>m2 &lt;- update(m1, formula = . ~ . + age)
 summary(m2)</code></pre>
 <pre><code>## 
@@ -546,6 +548,7 @@ m2.</p>
 ## Residual standard error: 2.595 on 996 degrees of freedom
 ## Multiple R-squared:  0.6385, Adjusted R-squared:  0.6374 
 ## F-statistic: 586.4 on 3 and 996 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Height is explained by wegiht + age</p>
 </div>
 <div id="backward-selection" class="section level3">
 <h3>Backward Selection</h3>
@@ -554,6 +557,8 @@ fullest model you want to consider and systematically drops terms that
 do not contribute to the explanatory value of the model. The R functions
 for this process are drop1() to inspect the partial F test results and
 update() to update the model.</p>
+<p>We are starting with every covariate we think matters, that we think
+explains the Y.</p>
 <pre class="r"><code>m0 &lt;- lm(data = z, height ~ age + weight + zombies_killed + years_of_education)
 summary(m0)</code></pre>
 <pre><code>## 
@@ -613,6 +618,7 @@ summary(m1)</code></pre>
 ## Residual standard error: 1.64 on 996 degrees of freedom
 ## Multiple R-squared:  0.8557, Adjusted R-squared:  0.8552 
 ## F-statistic:  1968 on 3 and 996 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Zombies killed not significnat so we can drop that</p>
 <pre class="r"><code>drop1(m1, test = &quot;F&quot;)</code></pre>
 <pre><code>## Single term deletions
 ## 
@@ -679,9 +685,11 @@ significant, so the final, best model in this case is also m2.</p>
 ## Residual standard error: 1.64 on 997 degrees of freedom
 ## Multiple R-squared:  0.8555, Adjusted R-squared:  0.8553 
 ## F-statistic:  2952 on 2 and 997 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Height explained by asge and weight, just like forward selection
+showed. This may not always the case though.</p>
 </div>
-<div id="model-selection-using-ac" class="section level3">
-<h3>Model Selection Using A/C</h3>
+<div id="model-selection-using-aic" class="section level3">
+<h3>Model Selection Using AIC</h3>
 <p>Now, there are two R functions that can act as further shortcuts for
 this process that use the Akaike Information Criterion (AIC) rather than
 the partial F-test to determine relative model fit. We’ll talk in more
